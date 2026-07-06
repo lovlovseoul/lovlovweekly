@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LOVLOV 자사몰 데이터 대시보드</title>
+<title>LOVLOV 주간 보고 대시보드</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <style>
   :root {
@@ -161,6 +161,7 @@
     <div class="week-tab" data-target="w2">6/8–6/14</div>
     <div class="week-tab" data-target="w3">6/15–6/21</div>
     <div class="week-tab" data-target="w4">6/22–6/28</div>
+    <div class="week-tab" data-target="w5">6/29–7/5</div>
   </div>
 
   <!-- ===================== JUNE MONTHLY ===================== -->
@@ -444,7 +445,8 @@
         <tr><td>6/1~6/7</td><td style="text-align:right;">4,784,850</td><td style="text-align:right;">91</td><td style="text-align:right;">71</td><td style="text-align:right;"><span class="badge bw">~20%</span></td><td style="font-size:12px; color:var(--ink-soft);">MELTING PANTS 반품 집중</td></tr>
         <tr><td>6/8~6/14</td><td style="text-align:right; color:var(--danger);">3,318,720</td><td style="text-align:right;">83</td><td style="text-align:right;">75</td><td style="text-align:right;"><span class="badge bd">31.3%</span></td><td style="font-size:12px; color:var(--ink-soft);">전환율 하락, 매출 최저</td></tr>
         <tr><td>6/15~6/21</td><td style="text-align:right; color:var(--success);">4,091,886</td><td style="text-align:right;">98</td><td style="text-align:right; color:var(--success);">103</td><td style="text-align:right;"><span class="badge bs">11.2%</span></td><td style="font-size:12px; color:var(--ink-soft);">살안타 기획전, 신규회원 최다</td></tr>
-        <tr style="font-weight:600;"><td>6/22~6/28</td><td style="text-align:right;">4,200,939</td><td style="text-align:right;">93</td><td style="text-align:right; color:var(--danger);">55</td><td style="text-align:right;"><span class="badge bd">30.1%</span></td><td style="font-size:12px; color:var(--ink-soft);">환불 급증, 취반률 재악화</td></tr>
+        <tr><td>6/22~6/28</td><td style="text-align:right;">4,200,939</td><td style="text-align:right;">93</td><td style="text-align:right; color:var(--danger);">55</td><td style="text-align:right;"><span class="badge bd">30.1%</span></td><td style="font-size:12px; color:var(--ink-soft);">환불 급증, 취반률 재악화</td></tr>
+        <tr style="font-weight:600;"><td>6/29~7/5</td><td style="text-align:right; color:var(--success);">5,512,273</td><td style="text-align:right;">109</td><td style="text-align:right;">88</td><td style="text-align:right;"><span class="badge bw">28.4%</span></td><td style="font-size:12px; color:var(--ink-soft);">순매출 최고치, 취반률 소폭 개선</td></tr>
       </table>
     </div>
 
@@ -742,6 +744,85 @@
     <div class="alert a-s" style="margin-top:6px;">✅ OUTER 이탈률 3.1%, Slim Capri Pants 2.4% — 해당 페이지 유입 추가 확대 검토 가능</div>
   </div>
 
+  <!-- ===================== WEEK 5 ===================== -->
+  <div class="week-panel" id="w5">
+    <div class="alert a-s">✅ 순매출 5,512,273원 — 5주 최고치. 전주 대비 +31.2%</div>
+
+    <div class="section-title">매출 요약</div>
+    <div class="metric-grid">
+      <div class="mc"><div class="ml">순매출</div><div class="mv">5,512,273</div><div class="md up">▲ 31.2% vs 전주(4,200,939)</div></div>
+      <div class="mc"><div class="ml">결제합계</div><div class="mv">6,911,740</div><div class="md up">▲ 27.0% vs 전주</div></div>
+      <div class="mc"><div class="ml">실결제금액</div><div class="mv">6,585,478</div><div class="md up">▲ 41.9% vs 전주</div></div>
+      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">109 / 135</div><div class="md up">▲ 17.2% vs 전주(93건)</div></div>
+    </div>
+    <div class="metric-grid" style="margin-top:10px;">
+      <div class="mc"><div class="ml">상품구매금액</div><div class="mv">10,455,300</div><div class="md up">▲ vs 전주 8,485,900</div></div>
+      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv">3,615,560</div><div class="md neu">할인률 약 34.6%</div></div>
+      <div class="mc"><div class="ml">환불합계</div><div class="mv">1,399,467</div><div class="md down">▲ vs 전주 1,244,302</div></div>
+      <div class="mc"><div class="ml">신규회원</div><div class="mv">88명</div><div class="md up">▲ vs 전주 55명</div></div>
+    </div>
+
+    <div class="section-title">취소 · 반품</div>
+    <div class="two-col">
+      <div class="card">
+        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">취소 <span style="font-size:24px;">13건</span></div>
+        <div style="font-size:12px; color:var(--danger);">▲ vs 전주 9건</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">SO COOL BANDING PANTS 4 · ATTENTION PANTS 4 · AIR FLOW SET-UP 3 · AIRY STRIPE SHIRT 1 · MELTING SKIRT 1</div>
+      </div>
+      <div class="card">
+        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">반품 <span style="font-size:24px;">18건</span></div>
+        <div style="font-size:12px; color:var(--danger);">취반률 약 28.4%</div>
+        <div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">ATTENTION PANTS 7 · SO COOL BANDING PANTS 6 · GLOW SOFT TANK 3 · MELTING SKIRT 1 · LOOSE DROP KNIT 1</div>
+      </div>
+    </div>
+    <div class="alert a-w" style="margin-top:8px;">⚠ 매출 최고치에도 취반률 28.4% — ATTENTION PANTS 반품 7건 집중 시작, 동향 주시 필요</div>
+    <div class="alert a-w" style="margin-top:6px;">⚠ SO COOL BANDING PANTS 취소4+반품6=10건 — 2주 연속 취반 집중</div>
+
+    <div class="section-title">장바구니 TOP (관심 지표)</div>
+    <div class="card">
+      <table>
+        <tr><th>상품명</th><th style="text-align:right; width:70px;">장바구니수</th><th style="width:130px;"></th></tr>
+        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right; font-weight:600;">47</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
+        <tr><td>ATTENTION PANTS</td><td style="text-align:right; font-weight:600;">47</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
+        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right; font-weight:600;">31</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:66%"></div></div></div></td></tr>
+        <tr><td>MELTING SKIRT</td><td style="text-align:right; font-weight:600;">20</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:43%"></div></div></div></td></tr>
+        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right; font-weight:600;">20</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:43%"></div></div></div></td></tr>
+      </table>
+    </div>
+    <div class="alert a-s" style="margin-top:8px;">✅ AIR FLOW SET-UP 조회 810회 + 장바구니 20개 — 다음 주 전환 전환 기대 상품</div>
+
+    <div class="section-title">유입 · 트래픽 (GA4)</div>
+    <div class="metric-grid">
+      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">5,400</div><div class="md up">▲ vs 전주 5,300</div></div>
+      <div class="mc"><div class="ml">총 사용자</div><div class="mv">5,800</div><div class="md up">▲ vs 전주 5,700</div></div>
+      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">31초</div><div class="md up">▲ vs 전주 28초</div></div>
+      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">4.2만</div><div class="md up">▲ vs 전주 3.9만</div></div>
+    </div>
+    <div class="card" style="margin-top:10px;">
+      <div class="traf"><span>ig / paid</span><span style="font-weight:600;">3,700명</span></div>
+      <div class="traf"><span>(direct) / (none)</span><span>767명</span></div>
+      <div class="traf"><span>th / paid</span><span>240명</span></div>
+      <div class="traf"><span>m.search.naver.com / referral</span><span>182명</span></div>
+      <div class="traf"><span>linktr.ee / referral</span><span>84명</span></div>
+      <div class="traf"><span>google / organic</span><span>72명</span></div>
+    </div>
+
+    <div class="section-title">관심 상품 (인기 페이지)</div>
+    <div class="card">
+      <table>
+        <tr><th>상품 / 페이지</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th></tr>
+        <tr><td>MELTING SKIRT</td><td style="text-align:right;">1,400회</td><td style="text-align:right;"><span class="badge bd">66.3%</span></td></tr>
+        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;">810회</td><td style="text-align:right;"><span class="badge bd">59.3%</span></td></tr>
+        <tr><td>OUTER 카테고리</td><td style="text-align:right;">138회</td><td style="text-align:right;"><span class="badge bs">12.0%</span></td></tr>
+        <tr><td>Slim Capri Pants</td><td style="text-align:right;">72회</td><td style="text-align:right;"><span class="badge bs">11.9%</span></td></tr>
+        <tr><td>Formal Pinstripe Banding Pants</td><td style="text-align:right;">41회</td><td style="text-align:right;"><span class="badge bw">34.2%</span></td></tr>
+        <tr><td>TWIST SILHOUETTE LONG TEE</td><td style="text-align:right;">40회</td><td style="text-align:right;"><span class="badge bw">27.3%</span></td></tr>
+      </table>
+    </div>
+    <div class="alert a-d" style="margin-top:8px;">🔻 MELTING SKIRT 4주 연속 조회 1,000회+ & 이탈률 60%대 — 상세페이지 개선 시급</div>
+    <div class="alert a-s" style="margin-top:6px;">✅ OUTER · Slim Capri 이탈률 12%대 — 유입 확대 시 전환 기대</div>
+  </div>
+
   <footer>LOVLOV 자사몰 주간 리포트 · 내부 공유용</footer>
 </div>
 
@@ -756,7 +837,7 @@
     });
   });
 
-  const labels = ['6/1–6/7', '6/8–6/14', '6/15–6/21', '6/22–6/28'];
+  const labels = ['6/1–6/7', '6/8–6/14', '6/15–6/21', '6/22–6/28', '6/29–7/5'];
   const ink = '#2B2825';
   const inkSoft = '#6B6560';
   const accent = '#A8856B';
@@ -774,7 +855,7 @@
       datasets: [
         {
           label: '순매출 (원)',
-          data: [4784850, 3318720, 4091886, 4200939],
+          data: [4784850, 3318720, 4091886, 4200939, 5512273],
           borderColor: accent,
           backgroundColor: 'rgba(168,133,107,0.12)',
           fill: true,
@@ -800,8 +881,8 @@
     data: {
       labels,
       datasets: [
-        { label: '주문수', data: [91, 83, 98, 93], backgroundColor: accent, borderRadius: 6 },
-        { label: '신규회원', data: [71, 75, 103, 55], backgroundColor: '#D9C5B0', borderRadius: 6 }
+        { label: '주문수', data: [91, 83, 98, 93, 109], backgroundColor: accent, borderRadius: 6 },
+        { label: '신규회원', data: [71, 75, 103, 55, 88], backgroundColor: '#D9C5B0', borderRadius: 6 }
       ]
     },
     options: {
@@ -818,7 +899,7 @@
       datasets: [
         {
           label: '취반률 (%)',
-          data: [20, 31.3, 11.2, 30.1],
+          data: [20, 31.3, 11.2, 30.1, 28.4],
           borderColor: danger,
           backgroundColor: 'rgba(168,82,63,0.10)',
           fill: true,
