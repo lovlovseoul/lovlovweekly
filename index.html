@@ -49,18 +49,61 @@
   }
   .top-meta { font-size: 12.5px; color: var(--ink-soft); text-align: right; line-height: 1.6; }
 
-  /* Week tabs */
-  .week-tabs {
-    display: flex; gap: 6px; margin-bottom: 28px; border-bottom: 1px solid var(--line);
-    overflow-x: auto; padding-bottom: 0;
+  /* Nav tabs — grouped dropdown */
+  .nav-bar {
+    display: flex; gap: 4px; margin-bottom: 28px;
+    border-bottom: 1px solid var(--line); padding-bottom: 0; flex-wrap: wrap;
   }
-  .week-tab {
-    padding: 10px 18px; font-size: 13px; color: var(--ink-soft);
+  .nav-group { position: relative; }
+  .nav-group-btn {
+    padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
     cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
-    transition: all 0.15s ease; font-weight: 500;
+    transition: all 0.15s ease; display: flex; align-items: center; gap: 5px;
+    background: none; border-top: none; border-left: none; border-right: none;
+    font-family: inherit; user-select: none;
   }
-  .week-tab:hover { color: var(--ink); }
-  .week-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-group-btn:hover { color: var(--ink); }
+  .nav-group-btn.active-group { color: var(--accent); border-bottom-color: var(--accent); }
+  .nav-group-btn .chevron {
+    font-size: 9px; transition: transform 0.2s ease; display: inline-block;
+  }
+  .nav-group.open .chevron { transform: rotate(180deg); }
+
+  /* Single top-level tab (전체 추이, CS) */
+  .nav-single {
+    padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
+    cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
+    transition: all 0.15s ease;
+  }
+  .nav-single:hover { color: var(--ink); }
+  .nav-single.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  /* Dropdown */
+  .nav-dropdown {
+    display: none; position: absolute; top: calc(100% + 1px); left: 0;
+    background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.10); min-width: 160px; z-index: 100;
+    overflow: hidden;
+  }
+  .nav-group.open .nav-dropdown { display: block; animation: dropIn 0.15s ease; }
+  @keyframes dropIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+  .nav-dropdown-section {
+    padding: 6px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-dropdown-section:last-child { border-bottom: none; }
+  .nav-dropdown-label {
+    font-size: 10px; font-weight: 700; color: var(--ink-soft);
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 6px 14px 4px;
+  }
+  .nav-dropdown-item {
+    padding: 8px 14px; font-size: 13px; color: var(--ink-soft);
+    cursor: pointer; transition: background 0.1s ease; white-space: nowrap;
+  }
+  .nav-dropdown-item:hover { background: var(--accent-soft); color: var(--ink); }
+  .nav-dropdown-item.active { color: var(--accent); font-weight: 600; background: var(--accent-soft); }
 
   .week-panel { display: none; }
   .week-panel.active { display: block; animation: fadeIn 0.25s ease; }
@@ -153,21 +196,49 @@
     <div class="top-meta">2026.05 — 08.02 · 업데이트 08.04<br>최혜인 MD · 자사몰 통합 리포트</div>
   </header>
 
-  <div class="week-tabs" id="weekTabs">
-    <div class="week-tab active" data-target="overview">전체 추이</div>
-    <div class="week-tab" data-target="may">5월 월간</div>
-    <div class="week-tab" data-target="jun">6월 월간</div>
-    <div class="week-tab" data-target="w1">6/1–6/7</div>
-    <div class="week-tab" data-target="w2">6/8–6/14</div>
-    <div class="week-tab" data-target="w3">6/15–6/21</div>
-    <div class="week-tab" data-target="w4">6/22–6/28</div>
-    <div class="week-tab" data-target="w5">6/29–7/5</div>
-    <div class="week-tab" data-target="w6">7/6–7/12</div>
-    <div class="week-tab" data-target="w7">7/13–7/19</div>
-    <div class="week-tab" data-target="w8">7/20–7/26</div>
-    <div class="week-tab" data-target="w9">7/27–8/2</div>
-    <div class="week-tab" data-target="jul">7월 월간</div>
-    <div class="week-tab" data-target="cs">CS 현황</div>
+  <div class="nav-bar" id="navBar">
+
+    <!-- 전체 추이 -->
+    <div class="nav-single active" data-target="overview">전체 추이</div>
+
+    <!-- 월간 그룹 -->
+    <div class="nav-group" id="grp-monthly">
+      <div class="nav-group-btn" onclick="toggleGroup('grp-monthly')">월간 보고 <span class="chevron">▼</span></div>
+      <div class="nav-dropdown">
+        <div class="nav-dropdown-section">
+          <div class="nav-dropdown-label">2026</div>
+          <div class="nav-dropdown-item" data-target="may">5월</div>
+          <div class="nav-dropdown-item" data-target="jun">6월</div>
+          <div class="nav-dropdown-item" data-target="jul">7월</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 주간 그룹 -->
+    <div class="nav-group" id="grp-weekly">
+      <div class="nav-group-btn" onclick="toggleGroup('grp-weekly')">주간 보고 <span class="chevron">▼</span></div>
+      <div class="nav-dropdown">
+        <div class="nav-dropdown-section">
+          <div class="nav-dropdown-label">6월</div>
+          <div class="nav-dropdown-item" data-target="w1">6/1–6/7</div>
+          <div class="nav-dropdown-item" data-target="w2">6/8–6/14</div>
+          <div class="nav-dropdown-item" data-target="w3">6/15–6/21</div>
+          <div class="nav-dropdown-item" data-target="w4">6/22–6/28</div>
+        </div>
+        <div class="nav-dropdown-section">
+          <div class="nav-dropdown-label">7월</div>
+          <div class="nav-dropdown-item" data-target="w5">6/29–7/5</div>
+          <div class="nav-dropdown-item" data-target="w6">7/6–7/12</div>
+          <div class="nav-dropdown-item" data-target="w7">7/13–7/19</div>
+          <div class="nav-dropdown-item" data-target="w8">7/20–7/26</div>
+          <div class="nav-dropdown-item" data-target="w9">7/27–8/2</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CS -->
+    <div class="nav-single" data-target="cs">CS 현황</div>
+
   </div>
 
   <!-- ===================== JUNE MONTHLY ===================== -->
@@ -1340,14 +1411,53 @@
 </div>
 
 <script>
-  // Tab switching
-  document.querySelectorAll('.week-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.week-tab').forEach(t => t.classList.remove('active'));
-      document.querySelectorAll('.week-panel').forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      document.getElementById(tab.dataset.target).classList.add('active');
+  // ── 드롭다운 토글 ──
+  function toggleGroup(id) {
+    const grp = document.getElementById(id);
+    const isOpen = grp.classList.contains('open');
+    // 다른 그룹 닫기
+    document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+    if (!isOpen) grp.classList.add('open');
+  }
+  // 바깥 클릭 시 닫기
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.nav-group')) {
+      document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+    }
+  });
+
+  // ── 패널 전환 ──
+  function showPanel(target) {
+    document.querySelectorAll('.week-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-single').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-dropdown-item').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav-group-btn').forEach(b => b.classList.remove('active-group'));
+
+    const panel = document.getElementById(target);
+    if (panel) panel.classList.add('active');
+
+    // 단일 탭 활성
+    document.querySelectorAll('.nav-single').forEach(t => {
+      if (t.dataset.target === target) t.classList.add('active');
     });
+    // 드롭다운 아이템 활성 + 부모 그룹 버튼 활성
+    document.querySelectorAll('.nav-dropdown-item').forEach(t => {
+      if (t.dataset.target === target) {
+        t.classList.add('active');
+        t.closest('.nav-group').querySelector('.nav-group-btn').classList.add('active-group');
+      }
+    });
+    // 드롭다운 닫기
+    document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+  }
+
+  // 단일 탭 클릭
+  document.querySelectorAll('.nav-single').forEach(t => {
+    t.addEventListener('click', () => showPanel(t.dataset.target));
+  });
+  // 드롭다운 아이템 클릭
+  document.querySelectorAll('.nav-dropdown-item').forEach(t => {
+    t.addEventListener('click', () => showPanel(t.dataset.target));
   });
 
   const labels = ['6/1–6/7', '6/8–6/14', '6/15–6/21', '6/22–6/28', '6/29–7/5', '7/6–7/12', '7/13–7/19', '7/20–7/26', '7/27–8/2'];
