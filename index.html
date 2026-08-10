@@ -22,7 +22,8 @@
     --danger-bg: #F6E8E4;
     --info: #6B7A8C;
     --info-bg: #EAEEF2;
-    --radius: 14px;
+    --radius: 12px;
+    --gap: 12px;
   }
   * { box-sizing: border-box; }
   body {
@@ -31,140 +32,138 @@
     color: var(--ink);
     font-family: -apple-system, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
     -webkit-font-smoothing: antialiased;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
   }
-  .shell { max-width: 1140px; margin: 0 auto; padding: 40px 28px 80px; }
+  .shell { max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; overflow-x: hidden; }
 
+  /* ── Header ── */
   header.top {
     display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 28px; flex-wrap: wrap; gap: 16px;
+    margin-bottom: 24px; flex-wrap: wrap; gap: 14px;
   }
   .brand-mark {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 13px; letter-spacing: 0.18em; color: var(--accent);
-    text-transform: uppercase; margin-bottom: 6px;
+    font-family: Georgia, serif; font-size: 12px; letter-spacing: 0.18em;
+    color: var(--accent); text-transform: uppercase; margin-bottom: 5px;
   }
-  h1 {
-    font-family: Georgia, "Times New Roman", serif;
-    font-size: 30px; font-weight: 400; margin: 0; color: var(--ink);
-  }
-  .top-meta { font-size: 12.5px; color: var(--ink-soft); text-align: right; line-height: 1.6; }
+  h1 { font-family: Georgia, serif; font-size: 28px; font-weight: 400; margin: 0; }
+  .top-meta { font-size: 12px; color: var(--ink-soft); text-align: right; line-height: 1.7; }
 
-  /* Nav tabs — grouped dropdown */
+  /* ── Nav ── */
   .nav-bar {
-    display: flex; gap: 4px; margin-bottom: 28px;
-    border-bottom: 1px solid var(--line); padding-bottom: 0; flex-wrap: wrap;
+    display: flex; gap: 0; margin-bottom: 24px;
+    border-bottom: 1px solid var(--line); flex-wrap: wrap;
   }
   .nav-group { position: relative; }
   .nav-group-btn {
     padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
     cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
-    transition: all 0.15s ease; display: flex; align-items: center; gap: 5px;
+    transition: color 0.15s; display: flex; align-items: center; gap: 5px;
     background: none; border-top: none; border-left: none; border-right: none;
-    font-family: inherit; user-select: none;
+    font-family: inherit; user-select: none; margin-bottom: -1px;
   }
   .nav-group-btn:hover { color: var(--ink); }
   .nav-group-btn.active-group { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav-group-btn .chevron {
-    font-size: 9px; transition: transform 0.2s ease; display: inline-block;
-  }
+  .nav-group-btn .chevron { font-size: 9px; transition: transform 0.2s; display: inline-block; }
   .nav-group.open .chevron { transform: rotate(180deg); }
-
-  /* Single top-level tab (전체 추이, CS) */
   .nav-single {
     padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
     cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
-    transition: all 0.15s ease;
+    transition: color 0.15s; margin-bottom: -1px;
   }
   .nav-single:hover { color: var(--ink); }
   .nav-single.active { color: var(--accent); border-bottom-color: var(--accent); }
-
-  /* Dropdown */
   .nav-dropdown {
-    display: none; position: absolute; top: calc(100% + 1px); left: 0;
+    display: none; position: absolute; top: calc(100% + 2px); left: 0;
     background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.10); min-width: 160px; z-index: 100;
-    overflow: hidden;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.09); min-width: 150px; z-index: 100; overflow: hidden;
   }
   .nav-group.open .nav-dropdown { display: block; animation: dropIn 0.15s ease; }
   @keyframes dropIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-
-  .nav-dropdown-section {
-    padding: 6px 0;
-    border-bottom: 1px solid var(--line);
-  }
+  .nav-dropdown-section { padding: 5px 0; border-bottom: 1px solid var(--line); }
   .nav-dropdown-section:last-child { border-bottom: none; }
   .nav-dropdown-label {
     font-size: 10px; font-weight: 700; color: var(--ink-soft);
-    letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 6px 14px 4px;
+    letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px 3px;
   }
   .nav-dropdown-item {
     padding: 8px 14px; font-size: 13px; color: var(--ink-soft);
-    cursor: pointer; transition: background 0.1s ease; white-space: nowrap;
+    cursor: pointer; transition: background 0.1s; white-space: nowrap;
   }
   .nav-dropdown-item:hover { background: var(--accent-soft); color: var(--ink); }
   .nav-dropdown-item.active { color: var(--accent); font-weight: 600; background: var(--accent-soft); }
 
+  /* ── Panels ── */
   .week-panel { display: none; }
-  .week-panel.active { display: block; animation: fadeIn 0.25s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .week-panel.active { display: block; animation: fadeIn 0.2s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
 
+  /* ── Section title ── */
   .section-title {
-    font-size: 11.5px; font-weight: 600; color: var(--ink-soft);
-    text-transform: uppercase; letter-spacing: 0.08em;
-    margin: 28px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
+    font-size: 11px; font-weight: 700; color: var(--ink-soft);
+    text-transform: uppercase; letter-spacing: 0.09em;
+    margin: 24px 0 10px; padding-bottom: 7px; border-bottom: 1px solid var(--line);
   }
-  .section-title:first-child { margin-top: 0; }
 
+  /* ── Alert ── */
   .alert {
-    margin-top: 10px; padding: 11px 16px; border-radius: 10px;
-    font-size: 13px; font-weight: 500; line-height: 1.5;
+    margin-top: 8px; padding: 10px 14px; border-radius: 9px;
+    font-size: 12.5px; font-weight: 500; line-height: 1.55;
   }
   .a-s { background: var(--success-bg); color: var(--success); }
   .a-w { background: var(--warn-bg); color: var(--warn); }
   .a-d { background: var(--danger-bg); color: var(--danger); }
+  .a-i { background: var(--info-bg); color: var(--info); }
 
+  /* ── Metric grid ── */
   .metric-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: var(--gap);
   }
   .mc {
-    background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 16px 18px;
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 14px 16px; min-width: 0;
   }
-  .ml { font-size: 11.5px; color: var(--ink-soft); margin-bottom: 6px; }
-  .mv { font-size: 22px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
-  .md { font-size: 12px; margin-top: 5px; font-weight: 500; }
+  .ml { font-size: 11.5px; color: var(--ink-soft); margin-bottom: 5px; }
+  .mv { font-size: 21px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+  .md { font-size: 11.5px; margin-top: 4px; font-weight: 500; }
   .up { color: var(--success); }
   .down { color: var(--danger); }
   .neu { color: var(--ink-soft); }
 
+  /* ── Card ── */
   .card {
-    background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 18px 20px;
+    background: var(--bg-card); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 16px 18px;
   }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+  .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap); }
+  @media (max-width: 580px) { .two-col { grid-template-columns: 1fr; } }
 
+  /* ── Table ── */
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  td, th { padding: 9px 8px; border-bottom: 1px solid var(--line); text-align: left; }
+  td, th { padding: 8px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
   tr:last-child td { border-bottom: none; }
-  th { font-weight: 600; color: var(--ink-soft); font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.03em; }
+  th { font-weight: 600; color: var(--ink-soft); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
 
-  .badge {
-    display: inline-block; font-size: 11px; padding: 3px 9px; border-radius: 99px; font-weight: 600;
-  }
+  /* ── Badge ── */
+  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
   .bw { background: var(--warn-bg); color: var(--warn); }
   .bd { background: var(--danger-bg); color: var(--danger); }
   .bs { background: var(--success-bg); color: var(--success); }
   .bi { background: var(--info-bg); color: var(--info); }
 
-  .bar-bg { flex: 1; height: 6px; background: var(--accent-soft); border-radius: 99px; overflow: hidden; }
+  /* ── Bar ── */
+  .bar-bg { flex: 1; height: 5px; background: var(--accent-soft); border-radius: 99px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 99px; background: var(--accent); }
 
+  /* ── Traffic row ── */
   .traf { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
   .traf:last-child { border-bottom: none; }
 
-  .crm-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 12px 0; border-bottom: 1px solid var(--line); gap: 10px; }
+  /* ── CRM ── */
+  .crm-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--line); gap: 10px; }
   .crm-row:last-child { border-bottom: none; }
   .crm-name { font-size: 13px; font-weight: 600; flex: 1; }
   .crm-meta { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
@@ -172,17 +171,17 @@
   .crm-stat { display: flex; flex-direction: column; align-items: flex-end; }
   .crm-stat-label { font-size: 10.5px; color: var(--ink-soft); }
   .crm-stat-val { font-size: 14px; font-weight: 600; }
-  .insight-box { background: var(--accent-soft); border-radius: 10px; padding: 12px 14px; margin-top: 10px; }
+  .insight-box { background: var(--accent-soft); border-radius: 9px; padding: 11px 13px; margin-top: 10px; }
   .insight-item { font-size: 12.5px; color: var(--ink); padding: 3px 0; display: flex; align-items: baseline; gap: 6px; }
   .insight-item::before { content: "·"; color: var(--accent); flex-shrink: 0; font-weight: 700; }
   .sub-title { font-size: 12.5px; font-weight: 600; color: var(--ink); margin: 14px 0 6px; }
 
-  /* Overview panel */
-  .chart-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; margin-bottom: 14px; }
-  .chart-wrap { position: relative; height: 280px; }
-  canvas { max-width: 100%; }
+  /* ── Chart cards ── */
+  .chart-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; margin-bottom: var(--gap); overflow: hidden; }
+  .chart-wrap { position: relative; height: 260px; width: 100%; }
+  canvas { display: block; max-width: 100%; }
 
-  footer { text-align: center; font-size: 11.5px; color: var(--ink-soft); margin-top: 50px; }
+  footer { text-align: center; font-size: 11.5px; color: var(--ink-soft); margin-top: 48px; }
 </style>
 </head>
 <body>
@@ -507,7 +506,7 @@
 
   <!-- ===================== OVERVIEW ===================== -->
   <div class="week-panel active" id="overview">
-    <div class="section-title">6월 4주 핵심 지표 추이</div>
+    <div class="section-title" id="overview-title">전체 추이</div>
     <div class="chart-card">
       <div class="chart-wrap"><canvas id="chartRevenue"></canvas></div>
     </div>
@@ -1593,6 +1592,14 @@
   });
 
   const labels = ['6/1–6/7', '6/8–6/14', '6/15–6/21', '6/22–6/28', '6/29–7/5', '7/6–7/12', '7/13–7/19', '7/20–7/26', '7/27–8/2', '8/3–8/9'];
+
+  // 전체추이 제목 자동 업데이트
+  const overviewTitle = document.getElementById('overview-title');
+  if (overviewTitle && labels.length > 0) {
+    const first = labels[0];
+    const last = labels[labels.length - 1];
+    overviewTitle.textContent = `${first} — ${last} · ${labels.length}주 전체 추이`;
+  }
   const ink = '#2B2825';
   const inkSoft = '#6B6560';
   const accent = '#A8856B';
