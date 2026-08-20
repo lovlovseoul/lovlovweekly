@@ -3,1681 +3,828 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LOVLOV 주간 보고 대시보드</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<title>LOVLOV 메타광고 대시보드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500;700&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --bg: #FAF8F5;
-    --bg-card: #FFFFFF;
-    --ink: #2B2825;
-    --ink-soft: #6B6560;
-    --line: #E8E3DC;
-    --accent: #A8856B;
-    --accent-soft: #EFE6DC;
-    --success: #5C7A5C;
-    --success-bg: #EBF1EA;
-    --warn: #B8895A;
-    --warn-bg: #F8EFE2;
-    --danger: #A8523F;
-    --danger-bg: #F6E8E4;
-    --info: #6B7A8C;
-    --info-bg: #EAEEF2;
-    --radius: 12px;
-    --gap: 12px;
+  :root{
+    --bg:#FAF9F6; --ink:#1A1D29; --ink-soft:#5B5A54; --line:#E8E3D9;
+    --card:#FFFFFF; --brown:#6B5842; --brown-soft:#F1EBE0;
+    --green:#3D7068; --green-soft:#E6F0EE; --red:#B84A3E; --red-soft:#FBECE9;
+    --radius:14px;
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font-family: -apple-system, "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR", sans-serif;
-    -webkit-font-smoothing: antialiased;
-    font-size: 14px;
-    line-height: 1.6;
-    overflow-x: hidden;
-  }
-  .shell { max-width: 1100px; margin: 0 auto; padding: 36px 24px 80px; overflow-x: hidden; }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:'Pretendard',-apple-system,sans-serif;line-height:1.5;padding:0 0 60px;}
+  .wrap{max-width:1220px;margin:0 auto;padding:0 24px;}
 
-  /* ── Header ── */
-  header.top {
-    display: flex; justify-content: space-between; align-items: flex-end;
-    margin-bottom: 24px; flex-wrap: wrap; gap: 14px;
-  }
-  .brand-mark {
-    font-family: Georgia, serif; font-size: 12px; letter-spacing: 0.18em;
-    color: var(--accent); text-transform: uppercase; margin-bottom: 5px;
-  }
-  h1 { font-family: Georgia, serif; font-size: 28px; font-weight: 400; margin: 0; }
-  .top-meta { font-size: 12px; color: var(--ink-soft); text-align: right; line-height: 1.7; }
+  header{border-bottom:1px solid var(--line);padding:32px 0 0;margin-bottom:0;position:sticky;top:0;background:var(--bg);z-index:10;}
+  .eyebrow{font-size:12px;letter-spacing:.12em;color:var(--brown);font-weight:600;text-transform:uppercase;margin-bottom:10px;}
+  h1{font-family:'Noto Serif KR',serif;font-weight:700;font-size:30px;color:var(--ink);margin-bottom:6px;}
+  .meta-row{display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:12px;margin-bottom:20px;}
+  .meta-text{font-size:13.5px;color:var(--ink-soft);}
+  .update-badge{display:flex;align-items:center;gap:8px;background:var(--green-soft);color:var(--green);font-size:13px;font-weight:600;padding:8px 14px;border-radius:100px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none;}
 
-  /* ── Nav ── */
-  .nav-bar {
-    display: flex; gap: 0; margin-bottom: 24px;
-    border-bottom: 1px solid var(--line); flex-wrap: wrap;
+  .tabs{display:flex;gap:4px;}
+  .tab{
+    padding:11px 22px;font-size:14.5px;font-weight:600;color:var(--ink-soft);
+    border-bottom:2.5px solid transparent;cursor:pointer;transition:.15s;
+    font-family:'Noto Serif KR',serif;
   }
-  .nav-group { position: relative; }
-  .nav-group-btn {
-    padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
-    cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
-    transition: color 0.15s; display: flex; align-items: center; gap: 5px;
-    background: none; border-top: none; border-left: none; border-right: none;
-    font-family: inherit; user-select: none; margin-bottom: -1px;
+  .tab:hover{color:var(--ink);}
+  .tab.active{color:var(--brown);border-bottom-color:var(--brown);}
+
+  main{padding-top:28px;}
+  .view{display:none;}
+  .view.active{display:block;}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:32px;}
+  .kpi-grid.kpi-grid-5{grid-template-columns:repeat(5,1fr);}
+  .kpi-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px 22px;position:relative;overflow:hidden;}
+  .kpi-card::before{content:"";position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 22px 22px 0;border-color:transparent var(--brown-soft) transparent transparent;}
+  .kpi-label{font-size:12.5px;color:var(--ink-soft);font-weight:500;margin-bottom:10px;}
+  .kpi-value{font-family:'Noto Serif KR',serif;font-size:25px;font-weight:700;color:var(--ink);letter-spacing:-.01em;}
+  .kpi-sub{font-size:12px;color:var(--green);font-weight:600;margin-top:6px;}
+  .kpi-delta{display:inline-flex;align-items:center;gap:3px;font-size:11.5px;font-weight:700;margin-top:5px;}
+  .kpi-delta.up{color:var(--green);}
+  .kpi-delta.down{color:var(--red);}
+  .kpi-delta .vs{font-weight:500;color:var(--ink-soft);margin-left:2px;}
+
+  /* account summary strip */
+  .account-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
+  .account-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;}
+  .account-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+  .account-name{font-family:'Noto Serif KR',serif;font-weight:700;font-size:14.5px;color:var(--ink);}
+  .account-status{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:100px;}
+  .account-status.live{background:var(--green-soft);color:var(--green);}
+  .account-status.idle{background:#EDEBE7;color:#6B6862;}
+  .account-metrics{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;font-size:12px;color:var(--ink-soft);}
+  .account-metrics b{display:block;color:var(--ink);font-size:15px;font-weight:700;font-family:'Noto Serif KR',serif;margin-top:2px;}
+  .account-note{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:11px;color:var(--ink-soft);}
+  .kpi-sub.warn{color:var(--red);}
+
+  section{margin-bottom:32px;}
+  .section-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px;}
+  .section-title{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;}
+  .section-note{font-size:12.5px;color:var(--ink-soft);}
+
+  .two-col{display:grid;grid-template-columns:1.3fr 1fr;gap:16px;}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px;}
+  .chart-wrap{position:relative;height:230px;}
+
+  .split-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+  .split-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px;}
+  .split-title{font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:12px;}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;font-size:13px;}
+  .bar-label{width:64px;flex:none;color:var(--ink-soft);}
+  .bar-track{flex:1;height:8px;background:var(--brown-soft);border-radius:4px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--brown);border-radius:4px;}
+  .bar-val{width:44px;flex:none;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;}
+
+  /* creative grid */
+  .creative-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;}
+  .creative-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;display:flex;flex-direction:column;}
+  .thumb-wrap{position:relative;width:100%;aspect-ratio:4/5;background:var(--brown-soft);overflow:hidden;}
+  .thumb-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .thumb-wrap .type-badge{
+    position:absolute;top:8px;left:8px;background:rgba(26,29,41,.72);color:#fff;
+    font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;
   }
-  .nav-group-btn:hover { color: var(--ink); }
-  .nav-group-btn.active-group { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav-group-btn .chevron { font-size: 9px; transition: transform 0.2s; display: inline-block; }
-  .nav-group.open .chevron { transform: rotate(180deg); }
-  .nav-single {
-    padding: 10px 16px; font-size: 13px; font-weight: 600; color: var(--ink-soft);
-    cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap;
-    transition: color 0.15s; margin-bottom: -1px;
+  .creative-body{padding:12px 14px 14px;flex:1;display:flex;flex-direction:column;gap:8px;}
+  .creative-title{font-size:12.5px;font-weight:600;line-height:1.4;color:var(--ink);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:34px;}
+  .creative-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px 10px;font-size:11.5px;color:var(--ink-soft);}
+  .creative-stats b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums;}
+  .perf-badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:5px;width:fit-content;}
+  .perf-badge.good{background:var(--green-soft);color:var(--green);}
+  .perf-badge.bad{background:var(--red-soft);color:var(--red);}
+
+  table{width:100%;border-collapse:collapse;font-size:13.5px;}
+  thead th{text-align:left;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-soft);font-weight:600;padding:0 12px 10px;border-bottom:1.5px solid var(--line);}
+  thead th.num{text-align:right;}
+  tbody td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:#FCFBF9;}
+  td.num{text-align:right;font-variant-numeric:tabular-nums;}
+
+  /* glossary */
+  .glossary-search{width:100%;max-width:320px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;font-family:'Pretendard',sans-serif;background:var(--card);color:var(--ink);margin-bottom:20px;}
+  .glossary-search:focus{outline:none;border-color:var(--brown);}
+  .glossary-group{margin-bottom:28px;}
+  .glossary-group-title{font-size:12.5px;font-weight:700;color:var(--brown);letter-spacing:.04em;text-transform:uppercase;margin-bottom:12px;}
+  .glossary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+  .term-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px;}
+  .term-card.hidden{display:none;}
+  .term-head{display:flex;align-items:baseline;gap:8px;margin-bottom:6px;flex-wrap:wrap;}
+  .term-abbr{font-family:'Noto Serif KR',serif;font-weight:700;font-size:16.5px;color:var(--ink);}
+  .term-kr{font-size:12.5px;color:var(--brown);font-weight:600;}
+  .term-desc{font-size:13px;color:var(--ink-soft);line-height:1.55;}
+  .term-example{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);}
+
+  /* hover thumbnail preview for table creative names */
+  .name-hover{position:relative;cursor:help;border-bottom:1px dotted var(--ink-soft);}
+  .name-hover .hover-preview{
+    display:none;position:absolute;z-index:50;left:0;top:calc(100% + 8px);
+    width:140px;background:var(--card);border:1px solid var(--line);border-radius:10px;
+    padding:6px;box-shadow:0 8px 24px rgba(26,29,41,.15);
   }
-  .nav-single:hover { color: var(--ink); }
-  .nav-single.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .nav-dropdown {
-    display: none; position: absolute; top: calc(100% + 2px); left: 0;
-    background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.09); min-width: 150px; z-index: 100; overflow: hidden;
+  .name-hover .hover-preview img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:6px;display:block;}
+  .name-hover:hover .hover-preview{display:block;}
+  @media (max-width:600px){
+    .name-hover .hover-preview{width:110px;}
   }
-  .nav-group.open .nav-dropdown { display: block; animation: dropIn 0.15s ease; }
-  @keyframes dropIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
-  .nav-dropdown-section { padding: 5px 0; border-bottom: 1px solid var(--line); }
-  .nav-dropdown-section:last-child { border-bottom: none; }
-  .nav-dropdown-label {
-    font-size: 10px; font-weight: 700; color: var(--ink-soft);
-    letter-spacing: 0.08em; text-transform: uppercase; padding: 6px 14px 3px;
-  }
-  .nav-dropdown-item {
-    padding: 8px 14px; font-size: 13px; color: var(--ink-soft);
-    cursor: pointer; transition: background 0.1s; white-space: nowrap;
-  }
-  .nav-dropdown-item:hover { background: var(--accent-soft); color: var(--ink); }
-  .nav-dropdown-item.active { color: var(--accent); font-weight: 600; background: var(--accent-soft); }
+  .term-example b{color:var(--ink);font-weight:600;}
 
-  /* ── Panels ── */
-  .week-panel { display: none; }
-  .week-panel.active { display: block; animation: fadeIn 0.2s ease; }
-  @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
+  footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:12px;color:var(--ink-soft);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;}
 
-  /* ── Section title ── */
-  .section-title {
-    font-size: 11px; font-weight: 700; color: var(--ink-soft);
-    text-transform: uppercase; letter-spacing: 0.09em;
-    margin: 24px 0 10px; padding-bottom: 7px; border-bottom: 1px solid var(--line);
+  @media (max-width:900px){
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .kpi-grid.kpi-grid-5{grid-template-columns:repeat(2,1fr);}
+    .two-col{grid-template-columns:1fr;}
+    .split-grid{grid-template-columns:1fr;}
+    .tabs{overflow-x:auto;}
   }
 
-  /* ── Alert ── */
-  .alert {
-    margin-top: 8px; padding: 10px 14px; border-radius: 9px;
-    font-size: 12.5px; font-weight: 500; line-height: 1.55;
+  @media (max-width:600px){
+    .wrap{padding:0 14px;}
+    body{padding-bottom:32px;}
+
+    header{padding-top:18px;}
+    h1{font-size:22px;margin-bottom:4px;}
+    .eyebrow{font-size:10.5px;margin-bottom:6px;}
+    .meta-row{margin-bottom:14px;gap:8px;}
+    .meta-text{font-size:12px;}
+    .update-badge{font-size:11.5px;padding:6px 10px;}
+
+    .tabs{
+      gap:0;overflow-x:auto;-webkit-overflow-scrolling:touch;
+      scrollbar-width:none;padding-bottom:2px;
+    }
+    .tabs::-webkit-scrollbar{display:none;}
+    .tab{
+      padding:10px 14px;font-size:13px;white-space:nowrap;flex:none;
+    }
+
+    main{padding-top:18px;}
+
+    .kpi-grid{grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px;}
+    .kpi-grid.kpi-grid-5{grid-template-columns:1fr 1fr;}
+    .kpi-card{padding:14px 14px;}
+    .kpi-card::before{border-width:0 16px 16px 0;}
+    .kpi-label{font-size:11px;margin-bottom:6px;}
+    .kpi-value{font-size:19px;}
+    .kpi-sub{font-size:10.5px;margin-top:4px;}
+    .kpi-delta{font-size:10px;margin-top:3px;}
+
+    section{margin-bottom:22px;}
+    .section-head{flex-direction:column;align-items:flex-start;gap:2px;margin-bottom:10px;}
+    .section-title{font-size:16px;}
+    .section-note{font-size:11.5px;}
+
+    .panel{padding:14px 14px;border-radius:10px;}
+    .chart-wrap{height:180px;}
+
+    .split-grid{gap:10px;}
+    .split-card{padding:14px 14px;}
+    .bar-label{width:52px;font-size:11.5px;}
+    .bar-val{width:38px;font-size:11.5px;}
+
+    /* creative grid: 2-up on phones, compact cards */
+    .creative-grid{grid-template-columns:repeat(2,1fr);gap:9px;}
+    .creative-body{padding:9px 10px 10px;gap:5px;}
+    .creative-title{font-size:11px;min-height:28px;}
+    .creative-stats{font-size:10.5px;gap:4px 6px;}
+    .perf-badge{font-size:9.5px;padding:2px 6px;}
+    .type-badge{font-size:9.5px;padding:2px 6px;}
+
+    /* tables: enable horizontal scroll instead of squeezing columns */
+    .table-panel{padding:6px;overflow-x:auto;overflow-y:visible;-webkit-overflow-scrolling:touch;}
+    table{font-size:12px;min-width:560px;}
+    thead th{font-size:10px;padding:0 8px 8px;}
+    tbody td{padding:9px 8px;}
+
+    .glossary-search{max-width:100%;font-size:13px;}
+    .glossary-grid{grid-template-columns:1fr;gap:9px;}
+    .term-card{padding:13px 14px;}
+    .term-abbr{font-size:15px;}
+
+    footer{font-size:11px;flex-direction:column;gap:4px;margin-top:28px;}
   }
-  .a-s { background: var(--success-bg); color: var(--success); }
-  .a-w { background: var(--warn-bg); color: var(--warn); }
-  .a-d { background: var(--danger-bg); color: var(--danger); }
-  .a-i { background: var(--info-bg); color: var(--info); }
 
-  /* ── Metric grid ── */
-  .metric-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
-    gap: var(--gap);
+  @media (max-width:380px){
+    .kpi-grid{grid-template-columns:1fr 1fr;}
+    .creative-grid{grid-template-columns:repeat(2,1fr);}
+    .kpi-value{font-size:17px;}
   }
-  .mc {
-    background: var(--bg-card); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 14px 16px; min-width: 0;
-  }
-  .ml { font-size: 11.5px; color: var(--ink-soft); margin-bottom: 5px; }
-  .mv { font-size: 21px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
-  .md { font-size: 11.5px; margin-top: 4px; font-weight: 500; }
-  .up { color: var(--success); }
-  .down { color: var(--danger); }
-  .neu { color: var(--ink-soft); }
-
-  /* ── Card ── */
-  .card {
-    background: var(--bg-card); border: 1px solid var(--line);
-    border-radius: var(--radius); padding: 16px 18px;
-  }
-  .two-col { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--gap); }
-  @media (max-width: 580px) { .two-col { grid-template-columns: 1fr; } }
-
-  /* ── Table ── */
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  td, th { padding: 8px 8px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: middle; }
-  tr:last-child td { border-bottom: none; }
-  th { font-weight: 600; color: var(--ink-soft); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; }
-
-  /* ── Badge ── */
-  .badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 600; }
-  .bw { background: var(--warn-bg); color: var(--warn); }
-  .bd { background: var(--danger-bg); color: var(--danger); }
-  .bs { background: var(--success-bg); color: var(--success); }
-  .bi { background: var(--info-bg); color: var(--info); }
-
-  /* ── Bar ── */
-  .bar-bg { flex: 1; height: 5px; background: var(--accent-soft); border-radius: 99px; overflow: hidden; }
-  .bar-fill { height: 100%; border-radius: 99px; background: var(--accent); }
-
-  /* ── Traffic row ── */
-  .traf { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
-  .traf:last-child { border-bottom: none; }
-
-  /* ── CRM ── */
-  .crm-row { display: flex; justify-content: space-between; align-items: flex-start; padding: 11px 0; border-bottom: 1px solid var(--line); gap: 10px; }
-  .crm-row:last-child { border-bottom: none; }
-  .crm-name { font-size: 13px; font-weight: 600; flex: 1; }
-  .crm-meta { font-size: 12px; color: var(--ink-soft); margin-top: 2px; }
-  .crm-stats { display: flex; gap: 14px; flex-shrink: 0; text-align: right; font-size: 12px; }
-  .crm-stat { display: flex; flex-direction: column; align-items: flex-end; }
-  .crm-stat-label { font-size: 10.5px; color: var(--ink-soft); }
-  .crm-stat-val { font-size: 14px; font-weight: 600; }
-  .insight-box { background: var(--accent-soft); border-radius: 9px; padding: 11px 13px; margin-top: 10px; }
-  .insight-item { font-size: 12.5px; color: var(--ink); padding: 3px 0; display: flex; align-items: baseline; gap: 6px; }
-  .insight-item::before { content: "·"; color: var(--accent); flex-shrink: 0; font-weight: 700; }
-  .sub-title { font-size: 12.5px; font-weight: 600; color: var(--ink); margin: 14px 0 6px; }
-
-  /* ── Chart cards ── */
-  .chart-card { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; margin-bottom: var(--gap); overflow: hidden; }
-  .chart-wrap { position: relative; height: 260px; width: 100%; }
-  canvas { display: block; max-width: 100%; }
-
-  footer { text-align: center; font-size: 11.5px; color: var(--ink-soft); margin-top: 48px; }
 </style>
 </head>
 <body>
-<div class="shell">
+<div class="wrap">
 
-  <header class="top">
-    <div>
-      <div class="brand-mark">LOVLOV · Pillowbook Co.</div>
-      <h1>주간 보고 대시보드</h1>
+  <header>
+    <div class="eyebrow">LOVLOV · Performance Marketing</div>
+    <h1>메타광고 대시보드</h1>
+    <div class="meta-row">
+      <div class="meta-text">계정: 로브로브 (LOVLOV) · 마지막 갱신 <strong id="reportDate">2026년 8월 20일</strong></div>
     </div>
-    <div class="top-meta">2026.05 — 08.09 · 업데이트 08.10<br>최혜인 MD · 자사몰 통합 리포트</div>
+    <div class="tabs">
+      <div class="tab active" data-view="daily">일간</div>
+      <div class="tab" data-view="weekly">주간</div>
+      <div class="tab" data-view="monthly">월간</div>
+      <div class="tab" data-view="alltime">전체추이</div>
+      <div class="tab" data-view="creatives">소재 라이브러리</div>
+      <div class="tab" data-view="wconcept">W컨셉 협력</div>
+      <div class="tab" data-view="cm29">29CM 협력</div>
+      <div class="tab" data-view="glossary">용어 정리</div>
+    </div>
   </header>
 
-  <div class="nav-bar" id="navBar">
+  <main class="wrap" style="padding-left:0;padding-right:0;">
 
-    <!-- 전체 추이 -->
-    <div class="nav-single active" data-target="overview">전체 추이</div>
-
-    <!-- 월간 그룹 -->
-    <div class="nav-group" id="grp-monthly">
-      <div class="nav-group-btn" onclick="toggleGroup('grp-monthly')">월간 보고 <span class="chevron">▼</span></div>
-      <div class="nav-dropdown">
-        <div class="nav-dropdown-section">
-          <div class="nav-dropdown-label">2026</div>
-          <div class="nav-dropdown-item" data-target="may">5월</div>
-          <div class="nav-dropdown-item" data-target="jun">6월</div>
-          <div class="nav-dropdown-item" data-target="jul">7월</div>
+    <!-- ===== 일간 ===== -->
+    <div class="view active" id="view-daily">
+      <div class="section-head"><div class="section-title">전체 계정 현황 (8/19 기준)</div><div class="section-note">운영중인 3개 광고 계정 한눈에 보기 · 휴가로 밀린 8/13~8/19 반영</div></div>
+      <div class="account-strip">
+        <div class="account-card">
+          <div class="account-card-head"><span class="account-name">로브로브 메인</span><span class="account-status live">집행중</span></div>
+          <div class="account-metrics">
+            <div>광고비<b>₩71,326</b></div>
+            <div>노출<b>5,423</b></div>
+            <div>클릭<b>266</b></div>
+            <div>소재 6개 지출 발생</div>
+          </div>
+          <div class="account-note">8/18 ₩84,682 → 8/19 ₩71,326 (▼15.8%) · 클릭수는 오히려 ▲40.7%로 CTR 개선</div>
+        </div>
+        <div class="account-card">
+          <div class="account-card-head"><span class="account-name">W컨셉 협력</span><span class="account-status live">집행중</span></div>
+          <div class="account-metrics">
+            <div>광고비<b>₩25,568</b></div>
+            <div>노출<b>2,085</b></div>
+            <div>클릭<b>93</b></div>
+            <div>소재 2개 지출 발생</div>
+          </div>
+          <div class="account-note">8/18 ₩16,123 → 8/19 ₩25,568 (▲58.6%) · "쏨 쿨 밴딩 팬츠" 할인율 재체크 캠페인 재개, 에어리 스트라이프 셔츠 병행</div>
+        </div>
+        <div class="account-card">
+          <div class="account-card-head"><span class="account-name">29CM 협력</span><span class="account-status live">집행중</span></div>
+          <div class="account-metrics">
+            <div>광고비<b>₩10,456</b></div>
+            <div>노출<b>400</b></div>
+            <div>클릭<b>24</b></div>
+            <div>소재 2개 지출 발생</div>
+          </div>
+          <div class="account-note">8/18 ₩43,303 → 8/19 ₩10,456 (▼75.9%) · 컬러 팝 가디건 신규 변형(0813, 0814) 대부분 정지, 기존 2개만 소액 집행</div>
         </div>
       </div>
-    </div>
 
-    <!-- 주간 그룹 -->
-    <div class="nav-group" id="grp-weekly">
-      <div class="nav-group-btn" onclick="toggleGroup('grp-weekly')">주간 보고 <span class="chevron">▼</span></div>
-      <div class="nav-dropdown">
-        <div class="nav-dropdown-section">
-          <div class="nav-dropdown-label">6월</div>
-          <div class="nav-dropdown-item" data-target="w1">6/1–6/7</div>
-          <div class="nav-dropdown-item" data-target="w2">6/8–6/14</div>
-          <div class="nav-dropdown-item" data-target="w3">6/15–6/21</div>
-          <div class="nav-dropdown-item" data-target="w4">6/22–6/28</div>
+      <div class="section-head"><div class="section-title">로브로브 메인 상세</div><div class="section-note">전일(8/19) 기준</div></div>
+      <div class="kpi-grid kpi-grid-5">
+        <div class="kpi-card"><div class="kpi-label">전일 광고비 소진</div><div class="kpi-value">₩71,326</div><div class="kpi-sub">8/19 기준</div><div class="kpi-delta down">▼ 15.8% <span class="vs">전일 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">전일 노출수</div><div class="kpi-value">5,423</div><div class="kpi-sub">CPM 평균 ₩13,152</div><div class="kpi-delta down">▼ 3.8% <span class="vs">전일 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">전일 클릭수</div><div class="kpi-value">266</div><div class="kpi-sub">CTR 4.90%</div><div class="kpi-delta up">▲ 40.7% <span class="vs">전일 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">구매전환</div><div class="kpi-value">32건</div><div class="kpi-sub">누적(지출 상위 6개 소재) · 전일 4건</div></div>
+        <div class="kpi-card"><div class="kpi-label">운영중 소재 수</div><div class="kpi-value">6개+</div><div class="kpi-sub warn">0811 소재군 상당수 정지, 소수 소재에 예산 집중</div></div>
+      </div>
+
+      <section>
+        <div class="section-head"><div class="section-title">최근 7일 추이</div><div class="section-note">8/13 – 8/19</div></div>
+        <div class="two-col">
+          <div class="panel"><div class="chart-wrap"><canvas id="dailySpendChart" role="img" aria-label="일별 광고비 소진 막대그래프">8/13 59,384원부터 8/19 71,326원까지 일별 소진 추이</canvas></div></div>
+          <div class="panel"><div class="chart-wrap"><canvas id="dailyImpChart" role="img" aria-label="일별 노출수 라인그래프">8/13 3,880건부터 8/19 5,423건까지 일별 노출 추이</canvas></div></div>
         </div>
-        <div class="nav-dropdown-section">
-          <div class="nav-dropdown-label">7월</div>
-          <div class="nav-dropdown-item" data-target="w5">6/29–7/5</div>
-          <div class="nav-dropdown-item" data-target="w6">7/6–7/12</div>
-          <div class="nav-dropdown-item" data-target="w7">7/13–7/19</div>
-          <div class="nav-dropdown-item" data-target="w8">7/20–7/26</div>
-          <div class="nav-dropdown-item" data-target="w9">7/27–8/2</div>
+      </section>
+
+      <section>
+        <div class="section-head"><div class="section-title">전일 소재별 성과</div><div class="section-note">8/19 · 광고비 높은 순</div></div>
+        <div class="panel table-panel" style="padding:10px 8px;">
+          <table>
+            <thead><tr><th>소재</th><th class="num">노출수</th><th class="num">클릭수</th><th class="num">CTR</th><th class="num">광고비</th><th class="num">구매전환</th></tr></thead>
+            <tbody id="dailyTableBody"></tbody>
+          </table>
         </div>
-        <div class="nav-dropdown-section">
-          <div class="nav-dropdown-label">8월</div>
-          <div class="nav-dropdown-item" data-target="w10">8/3–8/9</div>
+      </section>
+    </div>
+
+    <!-- ===== 주간 ===== -->
+    <div class="view" id="view-weekly">
+      <div class="kpi-grid kpi-grid-5">
+        <div class="kpi-card"><div class="kpi-label">주간 광고비 소진</div><div class="kpi-value">₩156,008</div><div class="kpi-sub">8/18(월)–8/19 · 이번 주 누적</div></div>
+        <div class="kpi-card"><div class="kpi-label">주간 노출수</div><div class="kpi-value">11,062</div><div class="kpi-sub">CPM 평균 ₩14,103</div></div>
+        <div class="kpi-card"><div class="kpi-label">주간 클릭수</div><div class="kpi-value">455</div><div class="kpi-sub">CTR 4.11%</div></div>
+        <div class="kpi-card"><div class="kpi-label">일시정지 소재</div><div class="kpi-value">16개</div><div class="kpi-sub warn">현재 ACTIVE 4개 (아래 표 참고)</div></div>
+        <div class="kpi-card"><div class="kpi-label">주간 DB(회원가입)</div><div class="kpi-value">18건</div><div class="kpi-sub">인스타그램 채널 100% (7월 누적)</div></div>
+      </div>
+
+      <section>
+        <div class="section-head"><div class="section-title">일별 소진 · 노출 추이</div><div class="section-note">최근 7일</div></div>
+        <div class="two-col">
+          <div class="panel"><div class="chart-wrap"><canvas id="weeklySpendChart" role="img" aria-label="주간 일별 광고비 소진 막대그래프">7일간 광고비 소진 추이</canvas></div></div>
+          <div class="panel"><div class="chart-wrap"><canvas id="weeklyImpChart" role="img" aria-label="주간 일별 노출수 라인그래프">7일간 노출수 추이</canvas></div></div>
         </div>
+      </section>
+
+      <section>
+        <div class="section-head"><div class="section-title">소재별 누적 성과</div><div class="section-note">8/18(월)–8/19 이번 주 지출 발생 소재 전체 · 광고비 높은 순</div></div>
+        <div class="panel table-panel" style="padding:10px 8px;">
+          <table>
+            <thead><tr><th>소재</th><th class="num">노출수</th><th class="num">클릭수</th><th class="num">CTR</th><th class="num">CPM</th><th class="num">광고비</th><th class="num">상태</th></tr></thead>
+            <tbody id="weeklyTableBody"></tbody>
+          </table>
         </div>
+        <div class="section-note" style="margin-top:10px;">※ 주간 탭은 매주 월요일부터 다시 쌓이는 누적치예요(이번 주: 8/18~8/19). "일시정지" 표시 소재는 8/19 확인 시점 기준이며, 이번 주 안에서 지출이 발생했던 소재는 정지 이후에도 그 주간 누적 수치가 표에 남습니다.</div>
+      </section>
+    </div>
+
+    <!-- ===== 월간 ===== -->
+    <div class="view" id="view-monthly">
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">7월 광고비 소진</div><div class="kpi-value">₩16,969,895</div><div class="kpi-sub">7/1–7/30</div></div>
+        <div class="kpi-card"><div class="kpi-label">7월 노출수</div><div class="kpi-value">1,022,331</div><div class="kpi-sub">FB+IG+Threads 합산</div></div>
+        <div class="kpi-card"><div class="kpi-label">7월 DB(회원가입)</div><div class="kpi-value">29건</div><div class="kpi-sub">인스타그램 96.4%</div></div>
+        <div class="kpi-card"><div class="kpi-label">주요 유입층</div><div class="kpi-value">35–44세</div><div class="kpi-sub">여성 · DB의 48%</div></div>
       </div>
-    </div>
 
-    <!-- CS -->
-    <div class="nav-single" data-target="cs">CS 현황</div>
-
-  </div>
-
-  <!-- ===================== JUNE MONTHLY ===================== -->
-  <div class="week-panel" id="jun">
-    <div class="section-title">6월 월간 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">신규 회원</div><div class="mv">330명</div><div class="md down">▼ vs 5월 336명</div></div>
-      <div class="mc"><div class="ml">활성 사용자 (GA4)</div><div class="mv">2.3만</div><div class="md neu">총 사용자 2.3만</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">36초</div><div class="md neu">이벤트 수 19만</div></div>
-      <div class="mc"><div class="ml">판매금액 합계</div><div class="mv">21,545,652</div><div class="md neu">자사몰 기준</div></div>
-    </div>
-
-    <div class="section-title">판매 TOP 상품 (6월 전체 / 금액 기준)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right; width:60px;">수량</th><th style="text-align:right; width:110px;">판매금액 합</th><th style="width:140px;"></th></tr>
-        <tr>
-          <td><strong>ATTENTION PANTS</strong></td>
-          <td style="text-align:right; font-weight:600;">110개</td>
-          <td style="text-align:right; font-weight:600;">5,084,709</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>AIRY STRIPE SHIRT</td>
-          <td style="text-align:right; font-weight:600;">89개</td>
-          <td style="text-align:right; font-weight:600;">4,132,303</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:81%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>MELTING PANTS</td>
-          <td style="text-align:right; font-weight:600;">75개</td>
-          <td style="text-align:right; font-weight:600;">4,105,182</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:81%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>SO COOL BANDING PANTS</td>
-          <td style="text-align:right; font-weight:600;">60개</td>
-          <td style="text-align:right; font-weight:600;">3,140,866</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:62%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>MELTING SKIRT</td>
-          <td style="text-align:right; font-weight:600;">51개</td>
-          <td style="text-align:right; font-weight:600;">2,571,037</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:51%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>REFINED WORK JACKET</td>
-          <td style="text-align:right;">7개</td>
-          <td style="text-align:right;">627,100</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:12%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>MIDWAY RIB TANK</td>
-          <td style="text-align:right;">10개</td>
-          <td style="text-align:right;">247,000</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:5%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>SUMMERVEIL CARDIGAN</td>
-          <td style="text-align:right;">5개</td>
-          <td style="text-align:right;">245,545</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:5%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td style="color:var(--ink-soft); font-size:12px;">GLOW SOFT TANK 외 기타</td>
-          <td style="text-align:right; color:var(--ink-soft);">—</td>
-          <td style="text-align:right; color:var(--ink-soft);">791,728</td>
-          <td></td>
-        </tr>
-      </table>
-    </div>
-    <div class="insight-box" style="margin-top:10px;">
-      <div class="insight-item">ATTENTION PANTS 110개 · 508만원 — 6월 부동의 판매 1위, 수량·금액 모두 압도적</div>
-      <div class="insight-item">AIRY STRIPE SHIRT 89개 · MELTING PANTS 75개 — 2·3위 접전, 금액 차이 약 2.7만원으로 거의 동률</div>
-      <div class="insight-item">MELTING PANTS: 판매 75개이나 6월 반품 집중 이력 있음 — 순수익 대비 실적 재검토 권장</div>
-      <div class="insight-item">MELTING SKIRT: 51개 판매, 하반기로 갈수록 조회·판매 증가 추세</div>
-    </div>
-
-    <div class="section-title">유입 채널 (GA4 · 6월 전체)</div>
-    <div class="card">
-      <table>
-        <tr><th>채널</th><th style="text-align:right;">활성 사용자</th><th style="width:160px;"></th></tr>
-        <tr><td><strong>ig / paid</strong></td><td style="text-align:right; font-weight:600;">1.6만명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
-        <tr><td>(direct) / (none)</td><td style="text-align:right;">2,800명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:18%"></div></div></div></td></tr>
-        <tr><td>th / paid</td><td style="text-align:right;">1,200명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:8%"></div></div></div></td></tr>
-        <tr><td>m.search.naver.com / referral</td><td style="text-align:right;">678명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:4%"></div></div></div></td></tr>
-        <tr><td>lovlovseoul.com / referral</td><td style="text-align:right;">426명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:3%"></div></div></div></td></tr>
-        <tr><td>linktr.ee / referral</td><td style="text-align:right;">258명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:2%"></div></div></div></td></tr>
-        <tr><td>google / organic</td><td style="text-align:right;">333명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:2%"></div></div></div></td></tr>
-        <tr><td>facebook.com / referral</td><td style="text-align:right;">225명</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:1%"></div></div></div></td></tr>
-      </table>
-    </div>
-    <div class="alert a-d">🔻 ig/paid가 전체 유입의 압도적 1위 — 메타 광고 의존도 5월과 동일하게 매우 높음</div>
-
-    <div class="section-title">인기 페이지 (6월 전체 / 조회수 기준)</div>
-    <div class="card">
-      <table>
-        <tr><th>페이지</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th><th style="text-align:right;">활성 사용자</th></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right; font-weight:600;">4,200회</td><td style="text-align:right;"><span class="badge bd">59.1%</span></td><td style="text-align:right;">2,700</td></tr>
-        <tr><td>SUN PROOF SUMMER ☀ 기획전</td><td style="text-align:right; font-weight:600;">3,500회</td><td style="text-align:right;"><span class="badge bs">33.8%</span></td><td style="text-align:right;">2,000</td></tr>
-        <tr><td>REFINED WORK JACKET</td><td style="text-align:right;">885회</td><td style="text-align:right;"><span class="badge bd">56.9%</span></td><td style="text-align:right;">633</td></tr>
-        <tr><td>OUTER 카테고리</td><td style="text-align:right;">519회</td><td style="text-align:right;"><span class="badge bs">2.2%</span></td><td style="text-align:right;">325</td></tr>
-        <tr><td>LIGHT BREEZE JUMPER</td><td style="text-align:right;">415회</td><td style="text-align:right;"><span class="badge bw">50.3%</span></td><td style="text-align:right;">299</td></tr>
-        <tr><td>Slim Capri Pants</td><td style="text-align:right;">337회</td><td style="text-align:right;"><span class="badge bs">6.8%</span></td><td style="text-align:right;">245</td></tr>
-      </table>
-    </div>
-    <div class="alert a-w">⚠ MELTING SKIRT 4,200회로 6월 최다 조회 상품, 이탈률 59.1% — 높은 관심 대비 전환 개선 여지</div>
-    <div class="alert a-s" style="margin-top:6px;">✅ SUN PROOF SUMMER 기획전 이탈률 33.8%, OUTER/Slim Capri 이탈률 한 자릿수 — 전환 효율 우수 페이지</div>
-
-    <div class="section-title">지역별 활성 사용자</div>
-    <div class="card">
-      <table>
-        <tr><th>지역</th><th style="text-align:right;">활성 사용자</th></tr>
-        <tr><td>Seoul</td><td style="text-align:right; font-weight:600;">7,700명</td></tr>
-        <tr><td>Busan</td><td style="text-align:right;">2,500명</td></tr>
-        <tr><td>Incheon</td><td style="text-align:right;">916명</td></tr>
-        <tr><td>Daegu</td><td style="text-align:right;">904명</td></tr>
-        <tr><td>Daejeon</td><td style="text-align:right;">725명</td></tr>
-        <tr><td>Cheonan-si</td><td style="text-align:right;">631명</td></tr>
-        <tr><td>Gwangju</td><td style="text-align:right;">566명</td></tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- ===================== MAY ===================== -->
-  <div class="week-panel" id="may">
-    <div class="section-title">5월 월간 요약 (GA4 기준)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">신규 회원 가입</div><div class="mv">336명</div><div class="md down">▼ 54.9% vs 4월(745명)</div></div>
-      <div class="mc"><div class="ml">메타 광고 유입</div><div class="mv">11,000명</div><div class="md neu">전체 유입의 약 65%+</div></div>
-      <div class="mc"><div class="ml">직접 유입</div><div class="mv">2,700명</div><div class="md neu">2위 채널</div></div>
-      <div class="mc"><div class="ml">네이버 유입</div><div class="mv">745명</div><div class="md neu">검색 유입</div></div>
-    </div>
-
-    <div class="alert a-w" style="margin-top:10px;">⚠ 신규 가입자 54.9% 감소 — 4월 해서영님 공구 대비 대형 협업 부재 영향. 5월 자체 유입 기반 정상 수준으로 해석 가능</div>
-
-    <div class="section-title">방문자 유입 채널</div>
-    <div class="card">
-      <table>
-        <tr><th>채널</th><th style="text-align:right;">유입수</th><th style="width:160px;"></th><th>비고</th></tr>
-        <tr>
-          <td><strong>메타 광고</strong></td>
-          <td style="text-align:right; font-weight:600;">11,000명</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td>
-          <td style="font-size:11.5px; color:var(--ink-soft);">전체의 약 65%+</td>
-        </tr>
-        <tr>
-          <td>직접 유입</td>
-          <td style="text-align:right; font-weight:600;">2,700명</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:25%"></div></div></div></td>
-          <td style="font-size:11.5px; color:var(--ink-soft);">브랜드 인지 기반</td>
-        </tr>
-        <tr>
-          <td>네이버</td>
-          <td style="text-align:right; font-weight:600;">745명</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:7%"></div></div></div></td>
-          <td style="font-size:11.5px; color:var(--ink-soft);">검색 유입</td>
-        </tr>
-        <tr>
-          <td>인스타그램 (유기)</td>
-          <td style="text-align:right; font-weight:600;">439명</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:4%"></div></div></div></td>
-          <td style="font-size:11.5px; color:var(--ink-soft);">SNS 콘텐츠 효과</td>
-        </tr>
-        <tr>
-          <td>링크트리</td>
-          <td style="text-align:right; font-weight:600;">423명</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:4%"></div></div></div></td>
-          <td style="font-size:11.5px; color:var(--ink-soft);">SNS 프로필 경유</td>
-        </tr>
-        <tr>
-          <td>페이스북</td>
-          <td style="text-align:right; font-weight:600;">357명</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:3%"></div></div></div></td>
-          <td style="font-size:11.5px; color:var(--ink-soft);">SNS 콘텐츠 효과</td>
-        </tr>
-      </table>
-    </div>
-    <div class="alert a-d">🔻 메타 광고 의존도 65%+ — 광고 중단 시 유입 급감 리스크. 네이버/유기 SNS 채널 강화 필요</div>
-
-    <div class="section-title">인기 페이지 (조회수 기준)</div>
-    <div class="card">
-      <table>
-        <tr><th>페이지</th><th style="text-align:right;">조회수</th><th style="width:150px;"></th></tr>
-        <tr>
-          <td>메인 페이지</td>
-          <td style="text-align:right; font-weight:600;">40,000</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>리파인드 워크 자켓</td>
-          <td style="text-align:right; font-weight:600;">4,000</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>라이트 브레이커 점퍼</td>
-          <td style="text-align:right; font-weight:600;">2,000</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:20%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>라이트 브리즈 점퍼</td>
-          <td style="text-align:right; font-weight:600;">2,000</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:20%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>26SS 2nd Drop 기획전</td>
-          <td style="text-align:right; font-weight:600;">1,500</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:15%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>엔젤러블 X 로브로브</td>
-          <td style="text-align:right; font-weight:600;">1,200</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:12%"></div></div></div></td>
-        </tr>
-        <tr>
-          <td>OUTER 카테고리</td>
-          <td style="text-align:right; font-weight:600;">1,200</td>
-          <td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:12%"></div></div></div></td>
-        </tr>
-      </table>
-    </div>
-    <div class="insight-box" style="margin-top:10px;">
-      <div class="insight-item">리파인드 워크 자켓이 5월 상품 중 조회 압도적 1위 — 6월에도 지속 관심 확인</div>
-      <div class="insight-item">라이트 브레이커/브리즈 점퍼 동반 상위권 — 아우터 카테고리 수요 지속</div>
-      <div class="insight-item">엔젤러블 협업 페이지 1,200회 — 콜라보 콘텐츠의 트래픽 유인 효과 확인</div>
-    </div>
-
-    <div class="section-title">신규 vs 재방문자</div>
-    <div class="two-col">
-      <div class="card">
-        <div class="ml">신규 방문자</div>
-        <div class="mv" style="color:var(--accent);">압도적 비중</div>
-        <div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">메타 광고 통한 신규 유입 원활</div>
-      </div>
-      <div class="card">
-        <div class="ml">재방문자</div>
-        <div class="mv" style="color:var(--ink-soft);">상대적으로 낮음</div>
-        <div style="font-size:12px; color:var(--ink-soft); margin-top:6px;">채널톡 활용 재방문 유도 전략 필요</div>
-      </div>
-    </div>
-    <div class="alert a-w" style="margin-top:10px;">⚠ 재방문율 개선 필요 — 채널톡 메시지 기반 재방문 유도 전략 수립 예정</div>
-
-    <div class="section-title">신규 회원 추이 (월별)</div>
-    <div class="card">
-      <table>
-        <tr><th>월</th><th style="text-align:right;">신규 가입자</th><th>비고</th></tr>
-        <tr>
-          <td>4월</td>
-          <td style="text-align:right; font-weight:600; color:var(--success);">745명</td>
-          <td style="font-size:12px; color:var(--ink-soft);">해서영님 공구 대규모 유입</td>
-        </tr>
-        <tr>
-          <td>5월</td>
-          <td style="text-align:right; font-weight:600; color:var(--danger);">336명</td>
-          <td style="font-size:12px; color:var(--ink-soft);">대형 협업 부재 / 자체 유입 수준</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- ===================== OVERVIEW ===================== -->
-  <div class="week-panel active" id="overview">
-    <div class="section-title" id="overview-title">전체 추이</div>
-    <div class="chart-card">
-      <div class="chart-wrap"><canvas id="chartRevenue"></canvas></div>
-    </div>
-    <div class="two-col">
-      <div class="chart-card">
-        <div class="chart-wrap" style="height:220px;"><canvas id="chartOrders"></canvas></div>
-      </div>
-      <div class="chart-card">
-        <div class="chart-wrap" style="height:220px;"><canvas id="chartReturnRate"></canvas></div>
-      </div>
-    </div>
-
-    <div class="section-title">주차별 요약</div>
-    <div class="card">
-      <table>
-        <tr><th>주차</th><th style="text-align:right;">순매출</th><th style="text-align:right;">주문수</th><th style="text-align:right;">신규회원</th><th style="text-align:right;">취반률</th><th>비고</th></tr>
-        <tr><td>6/1~6/7</td><td style="text-align:right;">4,784,850</td><td style="text-align:right;">91</td><td style="text-align:right;">71</td><td style="text-align:right;"><span class="badge bw">~20%</span></td><td style="font-size:12px; color:var(--ink-soft);">MELTING PANTS 반품 집중</td></tr>
-        <tr><td>6/8~6/14</td><td style="text-align:right; color:var(--danger);">3,318,720</td><td style="text-align:right;">83</td><td style="text-align:right;">75</td><td style="text-align:right;"><span class="badge bd">31.3%</span></td><td style="font-size:12px; color:var(--ink-soft);">전환율 하락, 매출 최저</td></tr>
-        <tr><td>6/15~6/21</td><td style="text-align:right; color:var(--success);">4,091,886</td><td style="text-align:right;">98</td><td style="text-align:right; color:var(--success);">103</td><td style="text-align:right;"><span class="badge bs">11.2%</span></td><td style="font-size:12px; color:var(--ink-soft);">살안타 기획전, 신규회원 최다</td></tr>
-        <tr><td>6/22~6/28</td><td style="text-align:right;">4,200,939</td><td style="text-align:right;">93</td><td style="text-align:right; color:var(--danger);">55</td><td style="text-align:right;"><span class="badge bd">30.1%</span></td><td style="font-size:12px; color:var(--ink-soft);">환불 급증, 취반률 재악화</td></tr>
-        <tr><td>6/29~7/5</td><td style="text-align:right; color:var(--success);">5,512,273</td><td style="text-align:right;">109</td><td style="text-align:right;">88</td><td style="text-align:right;"><span class="badge bw">28.4%</span></td><td style="font-size:12px; color:var(--ink-soft);">순매출 최고치, 취반률 소폭 개선</td></tr>
-        <tr><td>7/6~7/12</td><td style="text-align:right; color:var(--success);">29,432,658</td><td style="text-align:right;">560</td><td style="text-align:right; color:var(--success);">1,230</td><td style="text-align:right;"><span class="badge bs">8.9%</span></td><td style="font-size:12px; color:var(--ink-soft);">SO BASIC 출시 — 역대 최고 매출</td></tr>
-        <tr><td>7/13~7/19</td><td style="text-align:right;">12,891,945</td><td style="text-align:right;">252</td><td style="text-align:right;">403</td><td style="text-align:right;"><span class="badge bw">16.3%</span></td><td style="font-size:12px; color:var(--ink-soft);">협업 후 자연 조정, 기준선 양호</td></tr>
-        <tr><td>7/20~7/26</td><td style="text-align:right; color:var(--success);">38,170,250</td><td style="text-align:right;">672</td><td style="text-align:right; color:var(--success);">859</td><td style="text-align:right;"><span class="badge bs">11.3%</span></td><td style="font-size:12px; color:var(--ink-soft);">SUMMER CLEARANCE — 역대 최고 매출</td></tr>
-        <tr><td>7/27~8/2</td><td style="text-align:right;">11,726,596</td><td style="text-align:right;">251</td><td style="text-align:right;">515</td><td style="text-align:right;"><span class="badge bw">19.5%</span></td><td style="font-size:12px; color:var(--ink-soft);">클리어런스 종료 · 크픽 협업 시작</td></tr>
-        <tr style="font-weight:600;"><td>8/3~8/9</td><td style="text-align:right;">6,248,050</td><td style="text-align:right;">81</td><td style="text-align:right;">108</td><td style="text-align:right;"><span class="badge bw">18.5%</span></td><td style="font-size:12px; color:var(--ink-soft);">크픽 종료 후 첫 일반 주간</td></tr>
-      </table>
-    </div>
-
-    <div class="alert a-d" style="margin-top:14px;">🔻 MELTING 라인(PANTS→SKIRT) 반품 패턴 반복 — 소재/핏 공통 이슈 가능성, 품질 점검 권장</div>
-    <div class="alert a-w" style="margin-top:8px;">⚠ 6/8주 급락 후 6/15주 반등(살안타 효과) → 6/22주 다시 트래픽·신규회원 감소. 기획전 의존도 점검 필요</div>
-    <div class="alert a-s" style="margin-top:8px;">✅ ig/paid가 매주 유입의 60%+ 차지 — 안정적 채널이나 의존도 분산 검토 여지</div>
-  </div>
-
-  <!-- ===================== WEEK 1 ===================== -->
-  <div class="week-panel" id="w1">
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv">4,784,850</div><div class="md up">▲ 43.2% vs 전주</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv">5,469,580</div><div class="md up">▲ 19.0% vs 전주</div></div>
-      <div class="mc"><div class="ml">실결제금액</div><div class="mv">4,948,829</div><div class="md up">▲ 20.1% vs 전주</div></div>
-      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">91 / 104</div><div class="md up">▲ 28.2% vs 전주(71건)</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px;">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv">8,295,900</div><div class="md up">▲ 12.2% vs 전주</div></div>
-      <div class="mc"><div class="ml">할인</div><div class="mv">2,651,120</div><div class="md neu">전주 2,630,170</div></div>
-      <div class="mc"><div class="ml">쿠폰</div><div class="mv">280,200</div><div class="md up">▲ 14.4% vs 전주</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">684,730</div><div class="md down">▼ vs 전주 1,256,309</div></div>
-    </div>
-
-    <div class="section-title">고객·회원</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">71명</div><div class="md down">▼ vs 전주 76명</div></div>
-      <div class="mc"><div class="ml">활성 사용자 (GA4)</div><div class="mv">4,100</div><div class="md neu">총 사용자 4,400</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">38초</div><div class="md neu">이벤트 수 3.5만</div></div>
-      <div class="mc"><div class="ml">주요 유입 지역</div><div class="mv" style="font-size:16px;">서울 1,400</div><div class="md neu">부산 424 / 대구 161</div></div>
-    </div>
-
-    <div class="section-title">유입 채널 (첫 방문 기준)</div>
-    <div class="card">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600;">2,800명</span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>497명</span></div>
-      <div class="traf"><span>th / paid</span><span>247명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>166명</span></div>
-      <div class="traf"><span>lovlovseoul.com / referral</span><span>61명</span></div>
-    </div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right; width:60px;">판매수</th><th style="text-align:right; width:60px;">반품수</th><th style="width:120px;"></th></tr>
-        <tr><td>MELTING PANTS</td><td style="text-align:right; font-weight:600;">23</td><td style="text-align:right;"><span class="badge bd">7</span></td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
-        <tr><td>AIRY STRIPE SHIRT <span style="font-size:11px; color:var(--ink-soft);">[12th reorder]</span></td><td style="text-align:right; font-weight:600;">18</td><td style="text-align:right;"><span class="badge bw">1</span></td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:78%"></div></div></div></td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right; font-weight:600;">13</td><td style="text-align:right;"><span class="badge bw">4</span></td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:57%"></div></div></div></td></tr>
-        <tr><td>MIDWAY RIB TANK</td><td style="text-align:right; font-weight:600;">4</td><td style="text-align:right; color:var(--ink-soft);">-</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:17%"></div></div></div></td></tr>
-        <tr><td>REFINED WORK JACKET</td><td style="text-align:right; font-weight:600;">4</td><td style="text-align:right;"><span class="badge bw">1</span></td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:17%"></div></div></div></td></tr>
-      </table>
-    </div>
-    <div class="alert a-w">⚠ MELTING PANTS 반품률 30.4% (판매 23건 중 7건) — CS 원인 확인 필요</div>
-
-    <div class="section-title">인기 페이지 (이탈률)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th></tr>
-        <tr><td>REFINED WORK JACKET</td><td style="text-align:right;">667</td><td style="text-align:right;"><span class="badge bd">66.4%</span></td></tr>
-        <tr><td>LIGHT BREEZE JUMPER</td><td style="text-align:right;">289</td><td style="text-align:right;"><span class="badge bd">63.5%</span></td></tr>
-        <tr><td>FORMAL PINSTRIPE BANDING PANTS</td><td style="text-align:right;">133</td><td style="text-align:right;">45.0%</td></tr>
-        <tr><td>LAYERED FLORAL LACE MIDI SKIRT</td><td style="text-align:right;">100</td><td style="text-align:right;"><span class="badge bw">60.2%</span></td></tr>
-        <tr><td>OUTER</td><td style="text-align:right;">152</td><td style="text-align:right;"><span class="badge bs">10.9%</span></td></tr>
-      </table>
-    </div>
-
-    <div class="section-title">취소·반품</div>
-    <div class="two-col">
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">취소 <span style="font-size:24px;">5건</span></div><div style="font-size:12px; color:var(--ink-soft);">미입금 자동취소 2건 포함</div><div style="font-size:12px; color:var(--danger); margin-top:4px;">전주 2건 대비 ▲ 3건</div></div>
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">반품 <span style="font-size:24px;">13건</span></div><div style="font-size:12px; color:var(--danger);">전주 4건 대비 ▲ 9건</div><div style="font-size:12px; color:var(--ink-soft); margin-top:2px;">MELTING PANTS 7건 집중</div></div>
-    </div>
-  </div>
-
-  <!-- ===================== WEEK 2 ===================== -->
-  <div class="week-panel" id="w2">
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv">3,318,720</div><div class="md down">▼ 30.6% vs 전주</div></div>
-      <div class="mc"><div class="ml">일평균 매출</div><div class="mv">474,103</div><div class="md neu">전주 순매출 대비 하락</div></div>
-      <div class="mc"><div class="ml">주문수</div><div class="mv">83건</div><div class="md down">▼ 8.8% (-8건) vs 전주</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">75명</div><div class="md up">▲ +4명 vs 전주(71명)</div></div>
-    </div>
-    <div class="alert a-d">⚠ 순매출 30.6% 급감 + 취반률 31.3% — 반품/취소가 매출 하락의 주요 원인</div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right; width:60px;">판매수</th><th style="width:140px;"></th></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right; font-weight:600;">21</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
-        <tr><td>에어리 스트라이프 셔츠</td><td style="text-align:right; font-weight:600;">15</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:71%"></div></div></div></td></tr>
-        <tr><td>MELTING PANTS</td><td style="text-align:right; font-weight:600;">12</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:57%"></div></div></div></td></tr>
-        <tr><td>쏘쿨 밴딩 팬츠</td><td style="text-align:right; font-weight:600;">11</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:52%"></div></div></div></td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right; font-weight:600;">7</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:33%"></div></div></div></td></tr>
-      </table>
-    </div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">취소 <span style="font-size:24px;">9건</span></div><div style="font-size:12px; color:var(--danger);">▲ 80.0% vs 전주(5건)</div><div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">MELTING PANTS 4 · 에어리 스트라이프 셔츠 3</div></div>
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">반품 <span style="font-size:24px;">17건</span></div><div style="font-size:12px; color:var(--danger);">▲ 30.8% vs 전주(13건)</div><div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">MELTING PANTS 10 · ATTENTION PANTS 5 · 에어리 셔츠 1 · REFINED WORK JACKET 1</div></div>
-    </div>
-    <div class="alert a-w">🔻 MELTING PANTS: 판매 12건 대비 취소4+반품10=14건 — 판매량 초과. 사이즈/품질 클레임 점검 필요</div>
-    <div class="alert a-w" style="margin-top:8px;">🔻 취반률 31.3% (취소9+반품17 / 주문83) — 전주 대비 큰 폭 악화</div>
-
-    <div class="section-title">유입·트래픽</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">인스타그램 광고</div><div class="mv">4,100명</div></div>
-      <div class="mc"><div class="ml">전체 활성 사용자</div><div class="mv">5,500명</div><div class="md up">▲ vs 전주 4,100명</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">5,800명</div><div class="md up">▲ vs 전주 4,400명</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">31초</div><div class="md down">▼ vs 전주 38초</div></div>
-    </div>
-    <div class="alert a-w" style="margin-top:10px;">⚠ 유입(사용자)은 늘었지만 매출은 30% 감소 → 전환율 하락. 트래픽 품질/상세페이지 점검 필요</div>
-
-    <div class="section-title">관심 상품 (이탈률)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right;">1,100</td><td style="text-align:right;"><span class="badge bd">70.3%</span></td></tr>
-        <tr><td>REFINED WORK JACKET</td><td style="text-align:right;">155</td><td style="text-align:right;"><span class="badge bd">63.1%</span></td></tr>
-        <tr><td>LIGHT BREEZE JUMPER</td><td style="text-align:right;">85</td><td style="text-align:right;"><span class="badge bw">38.9%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-w">🔻 MELTING SKIRT 조회 1,100회로 매우 높지만 이탈률 70.3% → 상세페이지/가격/옵션 전환 장벽 점검 1순위</div>
-  </div>
-
-  <!-- ===================== WEEK 3 ===================== -->
-  <div class="week-panel" id="w3">
-    <div class="alert a-s">✅ 전주 대비 매출 반등 +23.3%, 취반률 31.3% → 11.2%로 대폭 개선</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv">4,091,886</div><div class="md up">▲ 23.3% vs 전주</div></div>
-      <div class="mc"><div class="ml">일평균 매출</div><div class="mv">584,555</div><div class="md up">▲ vs 전주 474,103</div></div>
-      <div class="mc"><div class="ml">주문수</div><div class="mv">98건</div><div class="md up">▲ 18.1% (+15건)</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">103명</div><div class="md up">▲ +28명 vs 전주(75명)</div></div>
-    </div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right; width:55px;">판매수</th><th style="width:110px;"></th><th style="text-align:right; width:90px;">취소+반품</th></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right; font-weight:600;">22</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td><td style="text-align:right;"><span class="badge bw">반품 1</span></td></tr>
-        <tr><td>에어리 스트라이프 셔츠</td><td style="text-align:right; font-weight:600;">20</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:91%"></div></div></div></td><td style="text-align:right;"><span class="badge bw">취소2+반품1</span></td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right; font-weight:600;">20</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:91%"></div></div></div></td><td style="text-align:right;"><span class="badge bs">취소 1</span></td></tr>
-        <tr><td>MELTING PANTS</td><td style="text-align:right; font-weight:600;">10</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:45%"></div></div></div></td><td style="text-align:right;"><span class="badge bw">취소1+반품1</span></td></tr>
-        <tr><td>쏘쿨 밴딩 팬츠</td><td style="text-align:right; font-weight:600;">10</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:45%"></div></div></div></td><td style="text-align:right;"><span class="badge bw">취소 3</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s">✅ MELTING PANTS 반품 전주 10건 → 1건으로 정상화. 취반률 전반적으로 대폭 개선</div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">취소 <span style="font-size:24px;">8건</span></div><div style="font-size:12px; color:var(--success);">▼ -11.1% vs 전주(9건)</div><div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">쏘쿨밴딩 3 · 에어리셔츠 2 · MELTING PANTS 1 · MELTING SKIRT 1 · ALL-DAY WATER REPELLENT PANTS 1</div></div>
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">반품 <span style="font-size:24px;">3건</span></div><div style="font-size:12px; color:var(--success);">▼ -82.4% vs 전주(17건)</div><div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">에어리셔츠 1 · MELTING PANTS 1 · ATTENTION PANTS 1</div></div>
-    </div>
-
-    <div class="section-title">살안타 기획전 CRM 결과 (6/19 발송)</div>
-    <div class="sub-title" style="margin-top:0;">카카오 친구톡</div>
-    <div class="card">
-      <div class="crm-row">
-        <div style="flex:1;"><div class="crm-name">살안타 OPEN <span class="badge bi" style="font-size:10px; margin-left:4px;">전체 오픈 알림</span></div><div class="crm-meta">발송 1,366명</div></div>
-        <div class="crm-stats">
-          <div class="crm-stat"><div class="crm-stat-label">클릭률</div><div class="crm-stat-val">13.3%</div></div>
-          <div class="crm-stat"><div class="crm-stat-label">구매전환</div><div class="crm-stat-val">0.3%</div></div>
-          <div class="crm-stat"><div class="crm-stat-label">매출</div><div class="crm-stat-val up">248,979원</div></div>
+      <section>
+        <div class="section-head"><div class="section-title">7월 DB(회원가입) 유입 분석</div><div class="section-note">총 29건</div></div>
+        <div class="split-grid">
+          <div class="split-card">
+            <div class="split-title">채널별</div>
+            <div class="bar-row"><span class="bar-label">인스타그램</span><div class="bar-track"><div class="bar-fill" style="width:96.4%"></div></div><span class="bar-val">28건</span></div>
+            <div class="bar-row"><span class="bar-label">Threads</span><div class="bar-track"><div class="bar-fill" style="width:3.6%"></div></div><span class="bar-val">1건</span></div>
+            <div class="bar-row"><span class="bar-label">페이스북</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val">0건</span></div>
+          </div>
+          <div class="split-card">
+            <div class="split-title">연령대별</div>
+            <div class="bar-row"><span class="bar-label">18-24</span><div class="bar-track"><div class="bar-fill" style="width:7%"></div></div><span class="bar-val">2건</span></div>
+            <div class="bar-row"><span class="bar-label">25-34</span><div class="bar-track"><div class="bar-fill" style="width:21%"></div></div><span class="bar-val">6건</span></div>
+            <div class="bar-row"><span class="bar-label">35-44</span><div class="bar-track"><div class="bar-fill" style="width:48%"></div></div><span class="bar-val">14건</span></div>
+            <div class="bar-row"><span class="bar-label">45-54</span><div class="bar-track"><div class="bar-fill" style="width:14%"></div></div><span class="bar-val">4건</span></div>
+            <div class="bar-row"><span class="bar-label">55-64</span><div class="bar-track"><div class="bar-fill" style="width:7%"></div></div><span class="bar-val">2건</span></div>
+          </div>
+          <div class="split-card">
+            <div class="split-title">성별</div>
+            <div class="bar-row"><span class="bar-label">여성</span><div class="bar-track"><div class="bar-fill" style="width:96.5%"></div></div><span class="bar-val">28건</span></div>
+            <div class="bar-row"><span class="bar-label">남성</span><div class="bar-track"><div class="bar-fill" style="width:0%"></div></div><span class="bar-val">0건</span></div>
+            <div class="bar-row"><span class="bar-label">미상</span><div class="bar-track"><div class="bar-fill" style="width:3.5%"></div></div><span class="bar-val">1건</span></div>
+          </div>
         </div>
+      </section>
+
+      <section>
+        <div class="section-head"><div class="section-title">주차별 광고비 소진 추이</div><div class="section-note">7월 1주차(6/29 시작) – 5주차</div></div>
+        <div class="panel"><div class="chart-wrap"><canvas id="monthlyChart" role="img" aria-label="7월 주차별 광고비 소진 막대그래프">1주차 2,921,601원, 2주차 3,509,385원, 3주차 3,546,722원, 4주차 5,994,259원, 5주차 1,971,110원</canvas></div></div>
+        <div class="section-note" style="margin-top:10px;">※ 주차는 월요일 시작 기준(1주차 6/29~7/5)이라 5주차(7/27~30, 4일)로 마감됩니다. 위 KPI의 "7월 광고비 소진"은 달력상 7/1~7/30 합계라 주차 합계(6/29~7/30, ₩17,943,077)와는 기준일이 달라 차이가 있습니다.</div>
+      </section>
+    </div>
+
+    <!-- ===== 전체추이 ===== -->
+    <div class="view" id="view-alltime">
+      <div class="kpi-grid">
+        <div class="kpi-card"><div class="kpi-label">누적 운영 기간</div><div class="kpi-value">3개월+</div><div class="kpi-sub">5월 – 7월</div></div>
+        <div class="kpi-card"><div class="kpi-label">최근 3개월 소진</div><div class="kpi-value">₩38.2M</div><div class="kpi-sub">5–7월 합산</div></div>
+        <div class="kpi-card"><div class="kpi-label">월평균 CTR</div><div class="kpi-value">6.8%</div><div class="kpi-sub">3개월 평균</div></div>
+        <div class="kpi-card warn"><div class="kpi-label">지속 관찰 필요</div><div class="kpi-value">CPM 상승세</div><div class="kpi-sub warn">7월 들어 CPM 우상향</div></div>
       </div>
-      <div class="crm-row">
-        <div style="flex:1;"><div class="crm-name">일회성260619 <span class="badge bs" style="font-size:10px; margin-left:4px;">소수 타겟</span></div><div class="crm-meta">발송 48명</div></div>
-        <div class="crm-stats">
-          <div class="crm-stat"><div class="crm-stat-label">클릭률</div><div class="crm-stat-val up">22.9%</div></div>
-          <div class="crm-stat"><div class="crm-stat-label">구매전환</div><div class="crm-stat-val up">4.2%</div></div>
-          <div class="crm-stat"><div class="crm-stat-label">매출</div><div class="crm-stat-val up">103,370원</div></div>
-        </div>
+
+      <section>
+        <div class="section-head"><div class="section-title">월별 광고비 · CTR 추이</div><div class="section-note">최근 3개월</div></div>
+        <div class="panel"><div class="chart-wrap" style="height:280px;"><canvas id="alltimeChart" role="img" aria-label="최근 3개월 월별 광고비와 CTR 추이 복합 그래프">5월 10,850,200원 CTR 7.1%, 6월 11,050,600원 CTR 6.9%, 7월 16,969,895원 CTR 6.5%</canvas></div></div>
+      </section>
+
+      <section>
+        <div class="section-note" style="margin-top:-8px;">※ 전체추이 데이터는 최근 3개월 요약 기준이며, 세부 일자별 원천 데이터는 광고관리자에서 추가 확인 가능합니다.</div>
+      </section>
+    </div>
+
+    <!-- ===== 소재 라이브러리 ===== -->
+    <div class="view" id="view-creatives">
+      <div class="section-head"><div class="section-title">소재 라이브러리</div><div class="section-note">지출 상위 6개 소재 · 구매전환 누적/전일 병기 · 8/19 확인 기준</div></div>
+      <div class="creative-grid" id="creativeGrid"></div>
+      <div class="section-note" style="margin-top:14px;">※ 8/11 투입된 "0811 ATTENTION PANTS"·"0811 MELTING SKIRT" 20개 소재 대부분이 8/12부터 본격적으로 지출을 내기 시작했어요(계정 전체 광고비 ▲229.9%). 위 목록은 지출 상위 8개만 표시했고, 8/12에 신규 투입된 "0812 FLOW HAREM PANTS"·"0812 MELTING SKIRT" 6개는 아직 지출이 없어 생략했습니다.</div>
+    </div>
+
+    <!-- ===== W컨셉 협력 ===== -->
+    <div class="view" id="view-wconcept">
+      <div class="kpi-grid kpi-grid-5">
+        <div class="kpi-card"><div class="kpi-label">누적 광고비</div><div class="kpi-value">₩25,568</div><div class="kpi-sub">8/19 하루</div><div class="kpi-delta up">▲ 58.6% <span class="vs">전일(8/18) 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">노출수</div><div class="kpi-value">2,085</div><div class="kpi-sub">CPM 평균 ₩12,262</div><div class="kpi-delta up">▲ 54.8% <span class="vs">전일 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">클릭수</div><div class="kpi-value">93</div><div class="kpi-sub">평균 CTR 4.46%</div><div class="kpi-delta up">▲ 57.6% <span class="vs">전일 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">구매전환(누적)</div><div class="kpi-value">29건</div><div class="kpi-sub">캠페인 시작 이후 전체</div></div>
+        <div class="kpi-card"><div class="kpi-label">구매전환(전일)</div><div class="kpi-value">2건</div><div class="kpi-sub warn">8/19 · 쏨 쿨 밴딩 팬츠 소재</div></div>
       </div>
-      <div class="crm-row">
-        <div style="flex:1;"><div class="crm-name">살안타 OPEN_30일이내 구매자 <span class="badge bd" style="font-size:10px; margin-left:4px;">미반응</span></div><div class="crm-meta">발송 91명</div></div>
-        <div class="crm-stats">
-          <div class="crm-stat"><div class="crm-stat-label">클릭률</div><div class="crm-stat-val down">2.2%</div></div>
-          <div class="crm-stat"><div class="crm-stat-label">구매전환</div><div class="crm-stat-val down">0건</div></div>
-          <div class="crm-stat"><div class="crm-stat-label">매출</div><div class="crm-stat-val down">0원</div></div>
-        </div>
+
+      <section>
+        <div class="section-head"><div class="section-title">소재별 성과</div><div class="section-note">광고비·노출·클릭은 8/19 하루 · 구매전환은 누적/전일 병기</div></div>
+        <div class="creative-grid" id="wconceptGrid"></div>
+      </section>
+
+      <section>
+        <div class="section-note">※ 계정명: 로브로브 X W컨셉 협력. 휴가 기간 중 캠페인이 한 차례 더 바뀌었어요 — "쏨 쿨 밴딩 팬츠" 할인율 재체크 캠페인이 재개되며 8/19 기준 예산 대부분을 가져갔고, 기존 "(~18일 할인) 에어리 스트라이프 셔츠"는 정지 상태에서 소액만 남아있어요. 구매전환 누적 29건 중 에어리 스트라이프 셔츠가 21건으로 여전히 가장 많고, 쏨 쿨 밴딩 팬츠는 재개 첫날 2건을 기록했습니다.</div>
+      </section>
+    </div>
+
+    <!-- ===== 29CM 협력 ===== -->
+    <div class="view" id="view-cm29">
+      <div class="kpi-grid kpi-grid-5">
+        <div class="kpi-card"><div class="kpi-label">누적 광고비</div><div class="kpi-value">₩10,456</div><div class="kpi-sub">8/19 하루</div><div class="kpi-delta down">▼ 75.9% <span class="vs">전일(8/18) 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">노출수</div><div class="kpi-value">400</div><div class="kpi-sub">CPM 평균 ₩26,140</div><div class="kpi-delta down">▼ 75.1% <span class="vs">전일 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">클릭수</div><div class="kpi-value">24</div><div class="kpi-sub">평균 CTR 6.00%</div><div class="kpi-delta down">▼ 67.1% <span class="vs">전일 대비</span></div></div>
+        <div class="kpi-card"><div class="kpi-label">구매전환(누적)</div><div class="kpi-value">14건</div><div class="kpi-sub">캠페인 시작 이후 전체 (컬러 팝 가디건만)</div></div>
+        <div class="kpi-card"><div class="kpi-label">구매전환(전일)</div><div class="kpi-value">0건</div><div class="kpi-sub warn">8/19 · 신규 구매 없음</div></div>
       </div>
-      <div class="insight-box">
-        <div class="insight-item"><strong>전체 오픈 알림</strong> 비용대비 매출 729% — 평균 이상 성과</div>
-        <div class="insight-item"><strong>일회성 타겟</strong> 소수 발송이지만 클릭 22.9% · 전환 4.2% — 타겟 품질 우수</div>
-        <div class="insight-item"><strong>30일이내 구매자</strong> 완전 실패 — 추가 5% 쿠폰이 재구매 유인으로 작동 안 함. 세그먼트 재검토 필요</div>
+
+      <section>
+        <div class="section-head"><div class="section-title">소재별 성과</div><div class="section-note">광고비·노출·클릭은 8/19 하루 · 구매전환은 누적/전일 병기</div></div>
+        <div class="creative-grid" id="cm29Grid"></div>
+      </section>
+
+      <section>
+        <div class="section-note">※ 계정명: Collaborative Ads_29CM_lovlov. 휴가 기간 중 0813·0814 컬러 팝 가디건 신규 변형이 투입됐지만 대부분 정지됐고, 8/19은 기존 컬러 팝 가디건 2개 소재만 소액 집행중이에요. 광고비가 크게 줄면서(▼75.9%) 노출·클릭도 함께 감소했어요. 구매전환 누적 14건 중 8/19 신규 발생은 없었습니다.</div>
+      </section>
+    </div>
+
+    <!-- ===== 용어 정리 ===== -->
+    <div class="view" id="view-glossary">
+      <div class="section-head"><div class="section-title">광고 용어 정리</div><div class="section-note">헷갈리는 용어는 검색으로 바로 찾아보세요</div></div>
+      <input type="text" class="glossary-search" id="glossarySearch" placeholder="용어 검색 (예: CPM, 노출)">
+
+      <div class="glossary-group">
+        <div class="glossary-group-title">비용 지표</div>
+        <div class="glossary-grid" id="glossaryCost"></div>
       </div>
-    </div>
-
-    <div class="sub-title">알림톡 / 온사이트 CRM</div>
-    <div class="card">
-      <div class="crm-row">
-        <div style="flex:1;"><div class="crm-name">캠페인260615 <span class="badge bs" style="font-size:10px; margin-left:4px;">양호</span></div><div class="crm-meta">발송 6,969명</div></div>
-        <div class="crm-stats"><div class="crm-stat"><div class="crm-stat-label">클릭률</div><div class="crm-stat-val up">6.8%</div></div></div>
+      <div class="glossary-group">
+        <div class="glossary-group-title">성과 · 전환 지표</div>
+        <div class="glossary-grid" id="glossaryPerf"></div>
       </div>
-      <div class="crm-row">
-        <div style="flex:1;"><div class="crm-name">살안타 마감D-1 <span class="badge bd" style="font-size:10px; margin-left:4px;">사실상 실패</span></div><div class="crm-meta">발송 1,198명</div></div>
-        <div class="crm-stats"><div class="crm-stat"><div class="crm-stat-label">클릭률</div><div class="crm-stat-val down">0.1%</div></div></div>
+      <div class="glossary-group">
+        <div class="glossary-group-title">노출 · 도달 지표</div>
+        <div class="glossary-grid" id="glossaryReach"></div>
       </div>
-      <div class="insight-box">
-        <div class="insight-item"><strong>오픈 알림톡 6.8%</strong> — 일반 패션 CRM 기준 무난~양호</div>
-        <div class="insight-item"><strong>마감 D-1 알림톡 0.1%</strong> — 거의 반응 없음. 마감 긴박감 소구가 이 고객군에 효과 없음</div>
-      </div>
-    </div>
-
-    <div class="section-title">유입 · 트래픽</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">인스타그램 광고</div><div class="mv">5,200명</div><div class="md up">▲ vs 전주 4,100명</div></div>
-      <div class="mc"><div class="ml">전체 활성 사용자</div><div class="mv">7,800명</div><div class="md up">▲ vs 전주 5,500명</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">8,000명</div><div class="md up">▲ vs 전주 5,800명</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">40초</div><div class="md up">▲ vs 전주 31초</div></div>
-    </div>
-
-    <div class="section-title">관심 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th></tr>
-        <tr><td>SUN PROOF SUMMER 기획전</td><td style="text-align:right;">3,300</td><td style="text-align:right;"><span class="badge bs">33.8%</span></td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right;">1,200</td><td style="text-align:right;"><span class="badge bw">50.1%</span></td></tr>
-        <tr><td>SUMMERVEIL CARDIGAN</td><td style="text-align:right;">164</td><td style="text-align:right;"><span class="badge bs">6.5%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-w">⚠ MELTING SKIRT 2주 연속 조회 상위, 이탈률 70.3% → 50.1% 개선 중이나 지속 모니터링 필요</div>
-    <div class="alert a-s" style="margin-top:6px;">✅ SUMMERVEIL CARDIGAN 이탈률 6.5% — 전환 우수. 광고 소재 활용 검토 가능</div>
-  </div>
-
-  <!-- ===================== WEEK 4 ===================== -->
-  <div class="week-panel" id="w4">
-    <div class="alert a-w">⚠ 순매출 전주 대비 소폭 상승(+2.7%)이나 환불 급증(+88.6%) — 실질 수익 압박</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv">4,200,939</div><div class="md up">▲ 2.7% vs 전주</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv">5,445,241</div><div class="md down">▼ vs 전주 5,505,236</div></div>
-      <div class="mc"><div class="ml">주문수</div><div class="mv">93건</div><div class="md down">▼ -5.1% (-5건) vs 전주</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">55명</div><div class="md down">▼ -46.6% vs 전주(103명)</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px;">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv">8,485,900</div><div class="md down">▼ vs 전주 9,018,800</div></div>
-      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv">3,103,659</div><div class="md neu">할인률 약 36.6%</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">1,244,302</div><div class="md down">▲ 88.6% vs 전주</div></div>
-      <div class="mc"><div class="ml">네이버포인트</div><div class="mv">739,433</div><div class="md up">▲ vs 전주 495,469</div></div>
-    </div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right; width:55px;">판매수</th><th style="width:100px;"></th><th style="text-align:right; width:60px;">취소</th><th style="text-align:right; width:60px;">반품</th></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right; font-weight:600;">28</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td><td style="text-align:right;"><span class="badge bw">3</span></td><td style="text-align:right;"><span class="badge bd">4</span></td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right; font-weight:600;">27</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:96%"></div></div></div></td><td style="text-align:right;"><span class="badge bw">3</span></td><td style="text-align:right;"><span class="badge bw">3</span></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right; font-weight:600;">20</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:71%"></div></div></div></td><td style="text-align:right;"><span class="badge bw">2</span></td><td style="text-align:right;"><span class="badge bw">3</span></td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right; font-weight:600;">14</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:50%"></div></div></div></td><td style="text-align:right;"><span class="badge bs">1</span></td><td style="text-align:right;"><span class="badge bd">5</span></td></tr>
-        <tr><td>GLOW SOFT TANK</td><td style="text-align:right; font-weight:600;">6</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:21%"></div></div></div></td><td style="text-align:right; color:var(--ink-soft);">—</td><td style="text-align:right; color:var(--ink-soft);">—</td></tr>
-      </table>
-    </div>
-    <div class="alert a-d">🔻 MELTING SKIRT: 판매 14건인데 반품 5건 (반품률 35.7%) — MELTING PANTS 패턴 반복 조짐</div>
-    <div class="alert a-w" style="margin-top:8px;">⚠ SO COOL BANDING PANTS: 판매 1위(28건)이지만 취소 3 + 반품 4 = 취반 25% 주의</div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">취소 <span style="font-size:24px;">9건</span></div><div style="font-size:12px; color:var(--ink-soft);">MELTING SKIRT 1 · SO COOL BANDING PANTS 3 · AIRY STRIPE SHIRT 2 · ATTENTION PANTS 3 · NOAH LINEN T-SHIRT 1</div></div>
-      <div class="card"><div style="font-size:13px; font-weight:600; margin-bottom:6px;">반품 <span style="font-size:24px;">19건</span></div><div style="font-size:12px; color:var(--danger); margin-bottom:4px;">취반률 약 30.1%</div><div style="font-size:12px; color:var(--ink-soft);">MELTING SKIRT 5 · SO COOL BANDING PANTS 4 · AIRY STRIPE SHIRT 3 · ATTENTION PANTS 3 · MELTING PANTS 1 · MY SUMMER CARDIGAN 1 · 2WAY STRING SHIRT 1 · REFINED WORK JACKET 1</div></div>
-    </div>
-
-    <div class="section-title">유입 · 트래픽 (GA4)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">5,300</div><div class="md down">▼ vs 전주 7,800</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">5,700</div><div class="md down">▼ vs 전주 8,000</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">28초</div><div class="md down">▼ vs 전주 40초</div></div>
-      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">3.9만</div><div class="md neu">—</div></div>
-    </div>
-    <div class="card" style="margin-top:10px;">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600;">3,900명 <span style="font-size:11px; color:var(--ink-soft);">약 68%</span></span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>475명</span></div>
-      <div class="traf"><span>th / paid</span><span>308명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>176명</span></div>
-      <div class="traf"><span>lovlovseoul.com / referral</span><span>57명</span></div>
-    </div>
-    <div class="alert a-w" style="margin-top:8px;">⚠ 활성 사용자 전주 7,800 → 5,300 (-32%). 평균 참여 시간도 40초 → 28초로 하락</div>
-
-    <div class="section-title">관심 상품 (인기 페이지)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right;">1,500</td><td style="text-align:right;"><span class="badge bd">61.3%</span></td></tr>
-        <tr><td>SUN PROOF SUMMER ☀</td><td style="text-align:right;">155</td><td style="text-align:right;"><span class="badge bw">32.4%</span></td></tr>
-        <tr><td>OUTER</td><td style="text-align:right;">94</td><td style="text-align:right;"><span class="badge bs">3.1%</span></td></tr>
-        <tr><td>Slim Capri Pants</td><td style="text-align:right;">55</td><td style="text-align:right;"><span class="badge bs">2.4%</span></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;">50</td><td style="text-align:right;"><span class="badge bw">16.3%</span></td></tr>
-        <tr><td>Formal Pinstripe Banding Pants</td><td style="text-align:right;">33</td><td style="text-align:right;"><span class="badge bw">43.8%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-d" style="margin-top:8px;">🔻 MELTING SKIRT 조회 1,500회(3주 연속 증가)인데 이탈률 61.3% — 상세페이지 전환 개선 시급</div>
-    <div class="alert a-s" style="margin-top:6px;">✅ OUTER 이탈률 3.1%, Slim Capri Pants 2.4% — 해당 페이지 유입 추가 확대 검토 가능</div>
-  </div>
-
-  <!-- ===================== WEEK 5 ===================== -->
-  <div class="week-panel" id="w5">
-    <div class="alert a-s">✅ 순매출 5,512,273원 — 5주 최고치. 전주 대비 +31.2%</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv">5,512,273</div><div class="md up">▲ 31.2% vs 전주(4,200,939)</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv">6,911,740</div><div class="md up">▲ 27.0% vs 전주</div></div>
-      <div class="mc"><div class="ml">실결제금액</div><div class="mv">6,585,478</div><div class="md up">▲ 41.9% vs 전주</div></div>
-      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">109 / 135</div><div class="md up">▲ 17.2% vs 전주(93건)</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px;">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv">10,455,300</div><div class="md up">▲ vs 전주 8,485,900</div></div>
-      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv">3,615,560</div><div class="md neu">할인률 약 34.6%</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">1,399,467</div><div class="md down">▲ vs 전주 1,244,302</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">88명</div><div class="md up">▲ vs 전주 55명</div></div>
-    </div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card">
-        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">취소 <span style="font-size:24px;">13건</span></div>
-        <div style="font-size:12px; color:var(--danger);">▲ vs 전주 9건</div>
-        <div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">SO COOL BANDING PANTS 4 · ATTENTION PANTS 4 · AIR FLOW SET-UP 3 · AIRY STRIPE SHIRT 1 · MELTING SKIRT 1</div>
-      </div>
-      <div class="card">
-        <div style="font-size:13px; font-weight:600; margin-bottom:6px;">반품 <span style="font-size:24px;">18건</span></div>
-        <div style="font-size:12px; color:var(--danger);">취반률 약 28.4%</div>
-        <div style="margin-top:8px; font-size:12px; color:var(--ink-soft);">ATTENTION PANTS 7 · SO COOL BANDING PANTS 6 · GLOW SOFT TANK 3 · MELTING SKIRT 1 · LOOSE DROP KNIT 1</div>
-      </div>
-    </div>
-    <div class="alert a-w" style="margin-top:8px;">⚠ 매출 최고치에도 취반률 28.4% — ATTENTION PANTS 반품 7건 집중 시작, 동향 주시 필요</div>
-    <div class="alert a-w" style="margin-top:6px;">⚠ SO COOL BANDING PANTS 취소4+반품6=10건 — 2주 연속 취반 집중</div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right; width:70px;">판매수량</th><th style="width:130px;"></th></tr>
-        <tr><td><strong>ATTENTION PANTS</strong></td><td style="text-align:right; font-weight:600;">30</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right; font-weight:600;">27</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:90%"></div></div></div></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right; font-weight:600;">19</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:63%"></div></div></div></td></tr>
-        <tr><td>MELTING SKIRT <span style="font-size:11px; color:var(--ink-soft);">[7/10예약 포함]</span></td><td style="text-align:right; font-weight:600;">16</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:53%"></div></div></div></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right; font-weight:600;">9</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:30%"></div></div></div></td></tr>
-        <tr><td>GLOW SOFT TANK</td><td style="text-align:right; font-weight:600;">7</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:23%"></div></div></div></td></tr>
-        <tr><td>MELTING PANTS</td><td style="text-align:right; font-weight:600;">3</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:10%"></div></div></div></td></tr>
-        <tr><td style="color:var(--ink-soft); font-size:12px;">[2 PACK] MIDWAY RIB TANK 외 기타</td><td style="text-align:right; color:var(--ink-soft);">각 1</td><td></td></tr>
-      </table>
-    </div>
-    <div class="alert a-w" style="margin-top:8px;">⚠ ATTENTION PANTS 30개 판매 1위 — 반품도 7건으로 반품률 23.3%. 동향 주시 필요</div>
-    <div class="alert a-s" style="margin-top:6px;">✅ AIR FLOW SET-UP 9개 판매 진입 — 지난주 장바구니 20개에서 전환 시작</div>
-
-    <div class="section-title">장바구니 TOP (관심 지표)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right; width:70px;">장바구니수</th><th style="width:130px;"></th></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right; font-weight:600;">47</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right; font-weight:600;">47</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right; font-weight:600;">31</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:66%"></div></div></div></td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right; font-weight:600;">20</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:43%"></div></div></div></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right; font-weight:600;">20</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:43%"></div></div></div></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s" style="margin-top:8px;">✅ AIR FLOW SET-UP 조회 810회 + 장바구니 20개 — 다음 주 전환 전환 기대 상품</div>
-
-    <div class="section-title">유입 · 트래픽 (GA4)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">5,400</div><div class="md up">▲ vs 전주 5,300</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">5,800</div><div class="md up">▲ vs 전주 5,700</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">31초</div><div class="md up">▲ vs 전주 28초</div></div>
-      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">4.2만</div><div class="md up">▲ vs 전주 3.9만</div></div>
-    </div>
-    <div class="card" style="margin-top:10px;">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600;">3,700명</span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>767명</span></div>
-      <div class="traf"><span>th / paid</span><span>240명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>182명</span></div>
-      <div class="traf"><span>linktr.ee / referral</span><span>84명</span></div>
-      <div class="traf"><span>google / organic</span><span>72명</span></div>
-    </div>
-
-    <div class="section-title">관심 상품 (인기 페이지)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right;">1,400회</td><td style="text-align:right;"><span class="badge bd">66.3%</span></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;">810회</td><td style="text-align:right;"><span class="badge bd">59.3%</span></td></tr>
-        <tr><td>OUTER 카테고리</td><td style="text-align:right;">138회</td><td style="text-align:right;"><span class="badge bs">12.0%</span></td></tr>
-        <tr><td>Slim Capri Pants</td><td style="text-align:right;">72회</td><td style="text-align:right;"><span class="badge bs">11.9%</span></td></tr>
-        <tr><td>Formal Pinstripe Banding Pants</td><td style="text-align:right;">41회</td><td style="text-align:right;"><span class="badge bw">34.2%</span></td></tr>
-        <tr><td>TWIST SILHOUETTE LONG TEE</td><td style="text-align:right;">40회</td><td style="text-align:right;"><span class="badge bw">27.3%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-d" style="margin-top:8px;">🔻 MELTING SKIRT 4주 연속 조회 1,000회+ & 이탈률 60%대 — 상세페이지 개선 시급</div>
-    <div class="alert a-s" style="margin-top:6px;">✅ OUTER · Slim Capri 이탈률 12%대 — 유입 확대 시 전환 기대</div>
-  </div>
-
-  <!-- ===================== WEEK 6 ===================== -->
-  <div class="week-panel" id="w6">
-    <div class="alert a-s">✅ SO BASIC T-SHIRT 출시 효과 — 주문 560건·순매출 29,432,658원으로 역대 최고치</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv" style="font-size:16px;">29,432,658</div><div class="md up">▲ 433% vs 전주(5,512,273)</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv" style="font-size:16px;">31,614,968</div><div class="md up">▲ 357% vs 전주</div></div>
-      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">560 / 585</div><div class="md up">▲ 414% vs 전주(109건)</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">1,230명</div><div class="md up">▲ vs 전주 88명</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px;">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv" style="font-size:16px;">59,829,700</div><div class="md neu">할인률 47.4%</div></div>
-      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv" style="font-size:16px;">28,781,732</div><div class="md neu">대형 프로모션 영향</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">2,182,310</div><div class="md down">▲ vs 전주 1,399,467</div></div>
-      <div class="mc"><div class="ml">네이버포인트</div><div class="mv">895,573</div><div class="md neu">—</div></div>
-    </div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div style="background:#F5F2EE;border-radius:10px;padding:12px 14px;margin-bottom:10px;">
-      <div style="font-size:11.5px;color:#6B6560;margin-bottom:8px;font-weight:500;">🏆 SO BASIC T-SHIRT 시리즈 합산</div>
-      <div style="display:flex;gap:20px;font-size:13px;">
-        <div><div style="color:#6B6560;font-size:11px;">2 PACK</div><div style="font-weight:600;font-size:18px;">92개</div></div>
-        <div><div style="color:#6B6560;font-size:11px;">3 PACK</div><div style="font-weight:600;font-size:18px;">292개</div></div>
-        <div><div style="color:#6B6560;font-size:11px;">낱개</div><div style="font-weight:600;font-size:18px;">41개</div></div>
-        <div style="border-left:.5px solid #E8E3DC;padding-left:20px;"><div style="color:#6B6560;font-size:11px;">합계</div><div style="font-weight:600;font-size:18px;color:#5C7A5C;">425개+</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:70px;">판매수량</th><th style="width:130px;"></th></tr>
-        <tr><td><strong>[3 PACK] SO BASIC T-SHIRT</strong> <span class="badge bs" style="font-size:10px;">신규</span></td><td style="text-align:right;font-weight:600;">292</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td><strong>[2 PACK] SO BASIC T-SHIRT</strong> <span class="badge bs" style="font-size:10px;">신규</span></td><td style="text-align:right;font-weight:600;">92</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:31%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>SO BASIC T-SHIRT (낱개)</td><td style="text-align:right;font-weight:600;">41</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:14%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right;font-weight:600;">39</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:13%"></div></div></div></td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right;font-weight:600;">37</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:13%"></div></div></div></td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right;font-weight:600;">30</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:10%"></div></div></div></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;font-weight:600;">15</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:5%"></div></div></div></td></tr>
-        <tr><td style="color:var(--ink-soft);font-size:12px;">MELTING PANTS/SKIRT 외 기타</td><td style="text-align:right;color:var(--ink-soft);">각 1~5</td><td></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s">✅ SO BASIC T-SHIRT 3종 합산 425개+ — 이번 주 전체 주문의 약 76% 차지</div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card">
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">취소 <span style="font-size:24px;">29건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);">취소율 5.2% — 대규모 주문 대비 양호</div>
-        <div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">[3 PACK] SO BASIC 19 · [2 PACK] SO BASIC 2 · SO BASIC 낱개 2 · ATTENTION PANTS 4 · AIRY STRIPE SHIRT 1 · AIR FLOW SET-UP 1</div>
-      </div>
-      <div class="card">
-        <div style="font-size:13px;font-weight:600;margin-bottom:6px;">반품 <span style="font-size:24px;">21건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);">반품률 3.8% — 역대 최저 수준</div>
-        <div style="margin-top:8px;font-size:12px;color:var(--ink-soft);">ATTENTION PANTS 7 · SO COOL BANDING PANTS 5 · AIRY STRIPE SHIRT 2 · MELTING PANTS 2 · [2 PACK] SO BASIC 1</div>
-      </div>
-    </div>
-    <div class="alert a-s" style="margin-top:6px;">✅ 취반률 8.9% (취29+반21/주문560) — 역대 최저</div>
-    <div class="alert a-w" style="margin-top:6px;">⚠ ATTENTION PANTS 반품 7건 — 3주 연속. CS 확인 필요</div>
-
-    <div class="section-title">장바구니 TOP</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:70px;">장바구니수</th><th style="width:130px;"></th></tr>
-        <tr><td>[3 PACK] SO BASIC T-SHIRT</td><td style="text-align:right;font-weight:600;">198</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>SO BASIC T-SHIRT (낱개)</td><td style="text-align:right;font-weight:600;">170</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:86%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>[2 PACK] SO BASIC T-SHIRT</td><td style="text-align:right;font-weight:600;">120</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:61%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right;font-weight:600;">79</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div></td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right;font-weight:600;">61</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:31%"></div></div></div></td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right;font-weight:600;">51</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:26%"></div></div></div></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;font-weight:600;">34</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:17%"></div></div></div></td></tr>
-        <tr><td>MELTING SKIRT (예약)</td><td style="text-align:right;font-weight:600;">24</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:12%"></div></div></div></td></tr>
-      </table>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;">💡 SO BASIC 낱개 장바구니 170개 — 미전환자 리타겟 CRM 발송 검토 가능</div>
-
-    <div class="section-title">유입 · 트래픽 (GA4)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">7,900</div><div class="md up">▲ vs 전주 5,400</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">8,400</div><div class="md up">▲ vs 전주 5,800</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">41초</div><div class="md up">▲ vs 전주 31초</div></div>
-      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">9.3만</div><div class="md up">▲ vs 전주 4.2만</div></div>
-    </div>
-    <div class="card" style="margin-top:10px;">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600;">4,900명</span></div>
-      <div class="traf"><span>cpik.kr / referral</span><span style="font-weight:600;">875명 <span class="badge bs" style="font-size:10px;margin-left:4px;">인플루언서 협업</span></span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>810명</span></div>
-      <div class="traf"><span>lovlovseoul.cafe24.com / referral</span><span>415명</span></div>
-      <div class="traf"><span>th / paid</span><span>254명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>208명</span></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;">💡 인플루언서 협업 링크(cpik.kr) 경유 875명 유입 — 협업 트래픽 효과 확인</div>
-
-    <div class="section-title">관심 상품 (인기 페이지)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right;">조회수</th><th style="text-align:right;">이탈률</th></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right;">1,400회</td><td style="text-align:right;"><span class="badge bd">63.1%</span></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;">1,200회</td><td style="text-align:right;"><span class="badge bw">51.6%</span></td></tr>
-        <tr><td>OUTER 카테고리</td><td style="text-align:right;">188회</td><td style="text-align:right;"><span class="badge bs">6.0%</span></td></tr>
-        <tr><td>Slim Capri Pants</td><td style="text-align:right;">166회</td><td style="text-align:right;"><span class="badge bs">4.8%</span></td></tr>
-        <tr><td>Formal Pinstripe Banding Pants</td><td style="text-align:right;">55회</td><td style="text-align:right;"><span class="badge bw">38.5%</span></td></tr>
-        <tr><td>TWIST SILHOUETTE LONG TEE</td><td style="text-align:right;">37회</td><td style="text-align:right;"><span class="badge bs">12.1%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-w" style="margin-top:8px;">⚠ MELTING SKIRT 5주 연속 조회 1,000회+ & 이탈률 63% — 상세페이지 개선 필요</div>
-    <div class="alert a-s" style="margin-top:6px;">✅ AIR FLOW SET-UP 이탈률 59% → 51.6% 개선, 판매 15개 전환 확인</div>
-  </div>
-
-  <!-- ===================== WEEK 7 ===================== -->
-  <div class="week-panel" id="w7">
-    <div class="alert a-w">⚠ SO BASIC 출시 다음 주 — 순매출 12,891,945원으로 전주 대비 -56.2%. 정상 범주의 반동 하락</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv" style="font-size:16px">12,891,945</div><div class="md down">▼ 56.2% vs 전주(29,432,658)</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv" style="font-size:16px">14,919,130</div><div class="md down">▼ 52.8% vs 전주</div></div>
-      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">252 / 286</div><div class="md down">▼ 55.0% vs 전주(560건)</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">403명</div><div class="md down">▼ 67.2% vs 전주(1,230명)</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv" style="font-size:16px">24,721,100</div><div class="md neu">할인률 39.2%</div></div>
-      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv" style="font-size:16px">10,110,970</div><div class="md neu">할인 9,693,070 + 쿠폰 417,900</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">2,027,185</div><div class="md neu">vs 전주 2,182,310 (유사)</div></div>
-      <div class="mc"><div class="ml">네이버포인트</div><div class="mv">653,460</div><div class="md neu">—</div></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;">💡 전주 SO BASIC 출시 특수 이후 자연 조정. 순매출 12.9M은 일반 주간 기준 양호한 수준</div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:65px">판매수량</th><th style="text-align:right;width:65px">장바구니</th><th style="width:100px"></th></tr>
-        <tr><td><strong>ATTENTION PANTS</strong></td><td style="text-align:right;font-weight:600">44</td><td style="text-align:right">43</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td></tr>
-        <tr><td>[3 PACK] SO BASIC T-SHIRT</td><td style="text-align:right;font-weight:600">56</td><td style="text-align:right">40</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>[2 PACK] SO BASIC T-SHIRT</td><td style="text-align:right;font-weight:600">34</td><td style="text-align:right">31</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:77%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right;font-weight:600">38</td><td style="text-align:right">54</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:86%"></div></div></div></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right;font-weight:600">28</td><td style="text-align:right">56</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:64%"></div></div></div></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;font-weight:600">18</td><td style="text-align:right">31</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:41%"></div></div></div></td></tr>
-        <tr><td>SO BASIC T-SHIRT (낱개)</td><td style="text-align:right;font-weight:600">17</td><td style="text-align:right">46</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:39%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>[예약발송] MELTING SKIRT</td><td style="text-align:right;font-weight:600">9</td><td style="text-align:right">20</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:20%"></div></div></div></td></tr>
-        <tr><td style="color:var(--ink-soft);font-size:12px">GLOW SOFT TANK 외 기타</td><td style="text-align:right;color:var(--ink-soft)">각 1~4</td><td></td><td></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s">✅ SO BASIC T-SHIRT 3종 합산 107개 — 출시 2주 연속 꾸준한 수요 확인</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ ATTENTION PANTS 반품 8건 — 4주 연속 집중. CS 클레임 내용 확인 필요</div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">취소 <span style="font-size:22px">18건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">취소율 7.1%</div>
-        <div style="font-size:12px;color:var(--ink-soft)">[3 PACK] SO BASIC 3 · [2 PACK] SO BASIC 2 · AIRY STRIPE SHIRT 4 · AIR FLOW SET-UP 3 · SO COOL BANDING PANTS 2 · ATTENTION PANTS 2 · MELTING SKIRT 2</div>
-      </div>
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">반품 <span style="font-size:22px">23건</span></div>
-        <div style="font-size:12px;color:var(--danger);margin-bottom:8px">취반률 16.3%</div>
-        <div style="font-size:12px;color:var(--ink-soft)">ATTENTION PANTS 8 · AIRY STRIPE SHIRT 6 · AIR FLOW SET-UP 4 · SO COOL BANDING PANTS 4 · GLOW SOFT TANK 1</div>
-      </div>
-    </div>
-    <div class="alert a-s" style="margin-top:6px">✅ 취반률 16.3% — 6월 평균(~30%) 대비 양호</div>
-    <div class="alert a-d" style="margin-top:6px">🔻 AIRY STRIPE SHIRT 반품 6건 — 처음으로 반품 상위 진입. 원인 확인 필요</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ AIR FLOW SET-UP 취소3+반품4=7건 — 판매 18건 대비 취반률 38.9%</div>
-
-    <div class="section-title">유입 · 트래픽 (GA4)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">7,200</div><div class="md down">▼ vs 전주 7,900</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">7,700</div><div class="md down">▼ vs 전주 8,400</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">38초</div><div class="md down">▼ vs 전주 41초</div></div>
-      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">6.8만</div><div class="md down">▼ vs 전주 9.3만</div></div>
-    </div>
-    <div class="card" style="margin-top:10px">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600">5,100명</span></div>
-      <div class="traf"><span>cpik.kr / referral <span class="badge bs" style="font-size:10px;margin-left:4px">인플루언서 협업</span></span><span style="font-weight:600">279명</span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>617명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>267명</span></div>
-      <div class="traf"><span>th / paid</span><span>240명</span></div>
-      <div class="traf"><span>lovlovseoul.cafe24.com / referral</span><span>125명</span></div>
-      <div class="traf"><span>facebook.com / referral</span><span>116명</span></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C">💡 인플루언서 협업(cpik.kr) 유입 전주 875명 → 279명으로 감소 — 협업 활성도 체크 필요</div>
-
-    <div class="section-title">관심 상품 (인기 페이지)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right">조회수</th><th style="text-align:right">이탈률</th></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right">1,500회</td><td style="text-align:right"><span class="badge bd">60.2%</span></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right">1,200회</td><td style="text-align:right"><span class="badge bw">48.9%</span></td></tr>
-        <tr><td>OUTER 카테고리</td><td style="text-align:right">147회</td><td style="text-align:right"><span class="badge bs">5.3%</span></td></tr>
-        <tr><td>SUNLIT STRIPE SHIRT</td><td style="text-align:right">119회</td><td style="text-align:right"><span class="badge bs">4.0%</span></td></tr>
-        <tr><td>COLOR POP CARDIGAN</td><td style="text-align:right">83회</td><td style="text-align:right"><span class="badge bs">3.2%</span></td></tr>
-        <tr><td>🔥 SUMMER CLEARANCE</td><td style="text-align:right">62회</td><td style="text-align:right"><span class="badge bw">53.1%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-w" style="margin-top:8px">⚠ MELTING SKIRT 6주 연속 조회 1,000회+ — 이탈률 60.2%로 소폭 개선 중</div>
-    <div class="alert a-s" style="margin-top:6px">✅ AIR FLOW SET-UP 이탈률 지속 개선 (59.3% → 51.6% → 48.9%)</div>
-    <div class="alert a-s" style="margin-top:6px">✅ SUNLIT STRIPE SHIRT 4.0% · COLOR POP CARDIGAN 3.2% — 신규 상품 이탈률 매우 양호</div>
-  </div>
-
-  <!-- ===================== WEEK 8 ===================== -->
-  <div class="week-panel" id="w8">
-    <div class="alert a-s">✅ SUMMER CLEARANCE 효과 — 순매출 38,170,250원 역대 최고 경신</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv" style="font-size:15px">38,170,250</div><div class="md up">▲ 196.2% vs 전주(12,891,945)</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv" style="font-size:15px">41,828,550</div><div class="md up">▲ 180.4% vs 전주</div></div>
-      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">672 / 1,715</div><div class="md up">▲ 166.7% vs 전주(252건)</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">859명</div><div class="md up">▲ 113.1% vs 전주(403명)</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv" style="font-size:15px">215,194,700</div><div class="md neu">할인률 81.7%</div></div>
-      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv" style="font-size:15px">174,305,150</div><div class="md neu">대규모 클리어런스 할인</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">3,658,300</div><div class="md down">▲ vs 전주 2,027,185</div></div>
-      <div class="mc"><div class="ml">네이버포인트</div><div class="mv">1,898,700</div><div class="md up">▲ vs 전주 653,460</div></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C">💡 상품구매금액 2.15억 대비 할인 1.74억 — SUMMER CLEARANCE 대규모 할인 반영. 순매출 기준으로 해석 필요</div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div style="background:#F5F2EE;border-radius:10px;padding:12px 14px;margin-bottom:10px">
-      <div style="font-size:11.5px;color:#6B6560;margin-bottom:8px;font-weight:500">🏆 GAINSBOURG SHEARLING MUSTANG VEST — 이번 주 압도적 1위 (클리어런스)</div>
-      <div style="display:flex;gap:24px;font-size:13px">
-        <div><div style="color:#6B6560;font-size:11px">판매수량</div><div style="font-weight:600;font-size:22px;color:#5C7A5C">164개</div></div>
-        <div><div style="color:#6B6560;font-size:11px">장바구니</div><div style="font-weight:600;font-size:22px">374개</div></div>
-        <div><div style="color:#6B6560;font-size:11px">취소</div><div style="font-weight:600;font-size:16px;color:#A8523F;margin-top:4px">10건</div></div>
-      </div>
-    </div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:65px">판매수</th><th style="text-align:right;width:65px">장바구니</th><th style="width:100px"></th></tr>
-        <tr><td><strong>GAINSBOURG SHEARLING MUSTANG VEST</strong> <span class="badge bw" style="font-size:10px">클리어런스</span></td><td style="text-align:right;font-weight:600">164</td><td style="text-align:right">374</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#5C7A5C"></div></div></div></td></tr>
-        <tr><td>BERRY PUNCHING CARDIGAN SET</td><td style="text-align:right;font-weight:600">84</td><td style="text-align:right">104</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:51%"></div></div></div></td></tr>
-        <tr><td>COZYWEAR ZIP-UP</td><td style="text-align:right;font-weight:600">74</td><td style="text-align:right">234</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:45%"></div></div></div></td></tr>
-        <tr><td>RETRO STRIPE T-SHIRT</td><td style="text-align:right;font-weight:600">68</td><td style="text-align:right">231</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:41%"></div></div></div></td></tr>
-        <tr><td>LOV PATCH RIBBED T-SHIRT</td><td style="text-align:right;font-weight:600">61</td><td style="text-align:right">200</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:37%"></div></div></div></td></tr>
-        <tr><td>2WAY STRING SHIRT</td><td style="text-align:right;font-weight:600">57</td><td style="text-align:right">140</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:35%"></div></div></div></td></tr>
-        <tr><td>LINEFLOW PANTS</td><td style="text-align:right;font-weight:600">53</td><td style="text-align:right">116</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:32%"></div></div></div></td></tr>
-        <tr><td>CLASSIC CAR T-SHIRTS [4th reorder]</td><td style="text-align:right;font-weight:600">35</td><td style="text-align:right">71</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:21%"></div></div></div></td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right;font-weight:600">30</td><td style="text-align:right">42</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:18%"></div></div></div></td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right;font-weight:600">29</td><td style="text-align:right">58</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:18%"></div></div></div></td></tr>
-        <tr><td style="color:var(--ink-soft);font-size:12px">SANDY PIPING JUMPER · DAILY TWO-TUCK PANTS 외 다수</td><td style="text-align:right;color:var(--ink-soft)">각 14~39</td><td></td><td></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s">✅ GAINSBOURG VEST 164개 — 클리어런스 1위. 장바구니 374개로 미전환 수요도 여전히 많음</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ COZYWEAR ZIP-UP 장바구니 234개 vs 판매 74개 — 전환율 31.6%. 리타겟팅 검토 가능</div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">취소 <span style="font-size:22px">56건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">취소율 8.3%</div>
-        <div style="font-size:12px;color:var(--ink-soft)">GAINSBOURG VEST 10 · LOV PATCH RIBBED T-SHIRT 6 · 2WAY LOOSE DENIM SHORTS 5 · COZYWEAR ZIP-UP 5 · RETRO STRIPE T-SHIRT 5 · 기타</div>
-      </div>
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">반품 <span style="font-size:22px">20건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">취반률 11.3%</div>
-        <div style="font-size:12px;color:var(--ink-soft)">SO COOL BANDING PANTS 7 · ATTENTION PANTS 5 · AIRY STRIPE SHIRT 3 · 2WAY STRING SHIRT 1 · AIR FLOW SET-UP 1 · SO BASIC T-SHIRT 1</div>
-      </div>
-    </div>
-    <div class="alert a-s" style="margin-top:6px">✅ 취반률 11.3% — 대규모 주문 대비 매우 양호</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ ATTENTION PANTS 반품 5건 — 5주 연속 지속. CS 확인 필요</div>
-
-    <div class="section-title">유입 · 트래픽 (GA4)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">2.4만</div><div class="md up">▲ vs 전주 7,200</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">2.4만</div><div class="md up">▲ vs 전주 7,700</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">2분 06초</div><div class="md up">▲ vs 전주 38초</div></div>
-      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">45만</div><div class="md up">▲ vs 전주 6.8만</div></div>
-    </div>
-    <div class="card" style="margin-top:10px">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600">1.6만명</span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>2,600명</span></div>
-      <div class="traf"><span>t.co / referral <span class="badge bi" style="font-size:10px;margin-left:4px">트위터/X</span></span><span style="font-weight:600">741명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>522명</span></div>
-      <div class="traf"><span>th / paid</span><span>518명</span></div>
-      <div class="traf"><span>lovlovseoul.cafe24.com / referral</span><span>424명</span></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C">💡 t.co(트위터/X) 741명 유입 — SUMMER CLEARANCE 관련 바이럴 효과로 추정</div>
-
-    <div class="section-title">관심 상품 (인기 페이지)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right">조회수</th><th style="text-align:right">이탈률</th></tr>
-        <tr><td>🔥 SUMMER CLEARANCE</td><td style="text-align:right;font-weight:600">4.2만회</td><td style="text-align:right"><span class="badge bw">24.2%</span></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right">1,400회</td><td style="text-align:right"><span class="badge bw">38.9%</span></td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right">1,400회</td><td style="text-align:right"><span class="badge bw">45.3%</span></td></tr>
-        <tr><td>DOUBLE MOOD PUFFER</td><td style="text-align:right">1,400회</td><td style="text-align:right"><span class="badge bs">2.1%</span></td></tr>
-        <tr><td>로브로브 (카테고리)</td><td style="text-align:right">1,300회</td><td style="text-align:right"><span class="badge bs">4.2%</span></td></tr>
-        <tr><td>COZYWEAR ZIP-UP</td><td style="text-align:right">1,100회</td><td style="text-align:right"><span class="badge bs">2.6%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s" style="margin-top:8px">✅ SUMMER CLEARANCE 이탈률 24.2% — 대규모 트래픽 대비 전환 효율 우수</div>
-    <div class="alert a-s" style="margin-top:6px">✅ MELTING SKIRT 이탈률 45.3% — 7주 만에 60%대 탈출</div>
-    <div class="alert a-s" style="margin-top:6px">✅ DOUBLE MOOD PUFFER 2.1% · COZYWEAR ZIP-UP 2.6% — 이탈률 극저, FW 선수요 확인. PUFFER·MUSTANG VEST는 현재 품절 상태</div>
-  </div>
-
-  <!-- ===================== WEEK 9 ===================== -->
-  <div class="week-panel" id="w9">
-    <div class="alert a-w">⚠ 클리어런스 종료 후 정상 주간 — 순매출 11,726,596원. 크픽 협업 3건 진행 중(7/28~)</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv">11,726,596</div><div class="md down">▼ 69.3% vs 전주(38,170,250)</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv">14,684,106</div><div class="md down">▼ 64.9% vs 전주</div></div>
-      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">251 / 339</div><div class="md down">▼ 62.6% vs 전주(672건)</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">515명</div><div class="md down">▼ 40.0% vs 전주(859명)</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv">30,209,900</div><div class="md neu">할인률 51.8%</div></div>
-      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv">15,699,794</div><div class="md neu">잔여 클리어런스 할인 포함</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">2,957,510</div><div class="md neu">vs 전주 3,658,300</div></div>
-      <div class="mc"><div class="ml">네이버포인트</div><div class="mv">233,532</div><div class="md neu">—</div></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C">💡 크픽 협업(에어플로우·멜팅스커트·쏘베이직) 7/28 시작 — 이번 주는 일부만 반영, 다음 주 본격 효과 예정</div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:60px">판매수</th><th style="width:110px"></th><th style="text-align:right;width:55px">반품</th><th style="text-align:right;width:55px">취소</th></tr>
-        <tr><td><strong>AIR FLOW SET-UP</strong> <span class="badge bs" style="font-size:10px">크픽</span></td><td style="text-align:right;font-weight:600">131</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#5C7A5C"></div></div></div></td><td style="text-align:right"><span class="badge bd">6</span></td><td style="text-align:right"><span class="badge bd">16</span></td></tr>
-        <tr><td><strong>MELTING SKIRT</strong> <span class="badge bs" style="font-size:10px">크픽</span></td><td style="text-align:right;font-weight:600">16</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:12%;background:#5C7A5C"></div></div></div></td><td style="text-align:right"><span class="badge bd">3</span></td><td style="text-align:right"><span class="badge bw">1</span></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right;font-weight:600">9</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:7%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td>COLOR POP CARDIGAN</td><td style="text-align:right;font-weight:600">9</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:7%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td><td style="text-align:right"><span class="badge bw">1</span></td></tr>
-        <tr><td>COZYWEAR ZIP-UP</td><td style="text-align:right;font-weight:600">9</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:7%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right;font-weight:600">7</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:5%"></div></div></div></td><td style="text-align:right"><span class="badge bd">6</span></td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right;font-weight:600">6</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:5%"></div></div></div></td><td style="text-align:right"><span class="badge bw">1</span></td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td style="color:var(--ink-soft);font-size:12px">SO BASIC T-SHIRT · SANDY PIPING JUMPER 외 다수</td><td style="text-align:right;color:var(--ink-soft)">각 1~7</td><td></td><td></td><td></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s">✅ AIR FLOW SET-UP 131개 — 크픽 협업(7/28~) 즉시 반응. 이번 주 압도적 1위</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ AIR FLOW SET-UP 취소 16건 (취소율 12.2%) — 초기 협업 취소 집중, CS 확인 필요</div>
-    <div class="alert a-d" style="margin-top:6px">🔻 ATTENTION PANTS 반품 6건 — 6주 연속. 판매 7건 대비 반품률 85.7%, 긴급 CS 확인 필요</div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">취소 <span style="font-size:22px">27건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">취소율 10.8%</div>
-        <div style="font-size:12px;color:var(--ink-soft)">AIR FLOW SET-UP 16 · 2WAY STRING SHIRT 2 · LONGFIT SLACKS 1 · COLOR POP CARDIGAN 1 · MELTING SKIRT 1 · SO BASIC T-SHIRT 1 · SWEET HEART KNIT 1 · 기타</div>
-      </div>
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">반품 <span style="font-size:22px">22건</span></div>
-        <div style="font-size:12px;color:var(--danger);margin-bottom:8px">취반률 19.5%</div>
-        <div style="font-size:12px;color:var(--ink-soft)">ATTENTION PANTS 6 · AIR FLOW SET-UP 6 · MELTING SKIRT 3 · DAILY SOCKS 2 · SO BASIC T-SHIRT 2 · SO COOL BANDING PANTS 1 · DAILY TWO-TUCK PANTS 1</div>
-      </div>
-    </div>
-    <div class="alert a-w" style="margin-top:6px">⚠ 취반률 19.5% — AIR FLOW SET-UP 초기 협업 취소 집중 영향</div>
-
-    <div class="section-title">유입 · 트래픽 (GA4)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">8,600</div><div class="md down">▼ vs 전주 2.4만</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">9,300</div><div class="md down">▼ vs 전주 2.4만</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">1분 18초</div><div class="md down">▼ vs 전주 2분 06초</div></div>
-      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">13만</div><div class="md down">▼ vs 전주 45만</div></div>
-    </div>
-    <div class="card" style="margin-top:10px">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600">4,700명</span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>1,300명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>593명</span></div>
-      <div class="traf"><span>linktr.ee / referral</span><span>410명</span></div>
-      <div class="traf"><span>cpik.kr / referral <span class="badge bs" style="font-size:10px;margin-left:4px">인플루언서 협업</span></span><span style="font-weight:600">364명</span></div>
-      <div class="traf"><span>lovlovseoul.cafe24.com / referral</span><span>288명</span></div>
-      <div class="traf"><span>th / paid</span><span>187명</span></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C">💡 크픽 협업(cpik.kr) 364명 — 협업 시작일(7/28) 포함 주간. 다음 주 본격 반영 예정</div>
-
-    <div class="section-title">관심 상품 (인기 페이지)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right">조회수</th><th style="text-align:right">이탈률</th></tr>
-        <tr><td>🔥 SUMMER CLEARANCE</td><td style="text-align:right">6,600회</td><td style="text-align:right"><span class="badge bw">30.2%</span></td></tr>
-        <tr><td>AIR FLOW SET-UP <span class="badge bs" style="font-size:10px;margin-left:4px">크픽</span></td><td style="text-align:right">3,000회</td><td style="text-align:right"><span class="badge bw">53.3%</span></td></tr>
-        <tr><td>MELTING SKIRT <span class="badge bs" style="font-size:10px;margin-left:4px">크픽</span></td><td style="text-align:right">764회</td><td style="text-align:right"><span class="badge bw">54.0%</span></td></tr>
-        <tr><td>OUTER 카테고리</td><td style="text-align:right">648회</td><td style="text-align:right"><span class="badge bs">10.7%</span></td></tr>
-        <tr><td>COLOR POP CARDIGAN</td><td style="text-align:right">541회</td><td style="text-align:right"><span class="badge bs">4.2%</span></td></tr>
-        <tr><td>SUNLIT STRIPE SHIRT</td><td style="text-align:right">422회</td><td style="text-align:right"><span class="badge bs">2.1%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s" style="margin-top:8px">✅ AIR FLOW SET-UP 3,000회 — 크픽 협업 트래픽 유입. 전주(1,400회) 대비 2배 이상</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ AIR FLOW SET-UP·MELTING SKIRT 이탈률 53~54% — 전환 장벽 여전히 존재</div>
-    <div class="alert a-s" style="margin-top:6px">✅ COLOR POP CARDIGAN 4.2% · SUNLIT STRIPE SHIRT 2.1% — 이탈률 극저, 전환 우수</div>
-
-    <div class="section-title">🛒 장바구니 분석 (7/27~8/3)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">총 장바구니 담기</div><div class="mv">370건</div><div class="md neu">수량 기준</div></div>
-      <div class="mc"><div class="ml">크픽 유저 담기</div><div class="mv">141건</div><div class="md up">전체의 38%</div></div>
-      <div class="mc"><div class="ml">AIR FLOW 크픽 비중</div><div class="mv">73%</div><div class="md neu">135건 중 99건</div></div>
-    </div>
-
-    <div class="card" style="margin-top:10px">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:65px">장바구니</th><th style="width:110px"></th><th style="text-align:right;width:80px">크픽 담기</th></tr>
-        <tr><td><strong>AIR FLOW SET-UP</strong> <span class="badge bs" style="font-size:10px">크픽</span></td><td style="text-align:right;font-weight:600">135</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#5C7A5C"></div></div></div></td><td style="text-align:right;color:#5C7A5C;font-weight:600">99건</td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right;font-weight:600">49</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:36%"></div></div></div></td><td style="text-align:right;color:#6B6560">—</td></tr>
-        <tr><td>SO BASIC T-SHIRT <span class="badge bs" style="font-size:10px">크픽</span></td><td style="text-align:right;font-weight:600">47</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:35%;background:#5C7A5C"></div></div></div></td><td style="text-align:right;color:#5C7A5C;font-weight:600">28건</td></tr>
-        <tr><td>COLOR POP CARDIGAN</td><td style="text-align:right;font-weight:600">40</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:30%"></div></div></div></td><td style="text-align:right;color:#6B6560">—</td></tr>
-        <tr><td>COZYWEAR ZIP-UP</td><td style="text-align:right;font-weight:600">40</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:30%"></div></div></div></td><td style="text-align:right;color:#6B6560">—</td></tr>
-        <tr><td>MELTING SKIRT <span class="badge bs" style="font-size:10px">크픽</span></td><td style="text-align:right;font-weight:600">31</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:23%;background:#5C7A5C"></div></div></div></td><td style="text-align:right;color:#5C7A5C;font-weight:600">13건</td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right;font-weight:600">15</td><td><div style="display:flex"><div class="bar-bg"><div class="bar-fill" style="width:11%"></div></div></div></td><td style="text-align:right;color:#6B6560">—</td></tr>
-      </table>
-    </div>
-    <div class="alert a-s" style="margin-top:8px">✅ 크픽 협업 3종 모두 장바구니 반응 확인 — AIR FLOW SET-UP이 가장 강한 반응</div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;margin-top:6px">💡 COZYWEAR ZIP-UP·RETRO STRIPE T-SHIRT 누적 장바구니 각 274·226건 — FW 재입고 시 즉시 전환 기대</div>
-  </div>
-
-  <!-- ===================== JULY MONTHLY ===================== -->
-  <div class="week-panel" id="jul">
-    <div style="background:#2B2825;color:#FAF8F5;border-radius:12px;padding:14px 18px;margin-bottom:16px">
-      <div style="font-size:11px;letter-spacing:0.1em;opacity:0.7;margin-bottom:4px">MONTHLY REPORT</div>
-      <div style="font-size:20px;font-weight:500">2026년 7월 월간 요약</div>
-    </div>
-
-    <div class="section-title">주차별 매출 흐름</div>
-    <div class="card">
-      <table>
-        <tr><th>주차</th><th style="text-align:right">순매출</th><th style="text-align:right">주문수</th><th style="text-align:right">신규회원</th><th style="text-align:right">취반률</th><th>주요 이슈</th></tr>
-        <tr><td style="font-size:12px;color:var(--ink-soft)">6/29~7/5</td><td style="text-align:right">5,512,273</td><td style="text-align:right">109</td><td style="text-align:right">88</td><td style="text-align:right"><span class="badge bw">28.4%</span></td><td style="font-size:12px;color:var(--ink-soft)">SO BASIC 협업 시작</td></tr>
-        <tr><td style="font-size:12px;color:var(--ink-soft)">7/6~7/12</td><td style="text-align:right;color:var(--success);font-weight:600">29,432,658</td><td style="text-align:right">560</td><td style="text-align:right">1,230</td><td style="text-align:right"><span class="badge bs">8.9%</span></td><td style="font-size:12px;color:var(--ink-soft)">SO BASIC 협업 피크</td></tr>
-        <tr><td style="font-size:12px;color:var(--ink-soft)">7/13~7/19</td><td style="text-align:right">12,891,945</td><td style="text-align:right">252</td><td style="text-align:right">403</td><td style="text-align:right"><span class="badge bw">16.3%</span></td><td style="font-size:12px;color:var(--ink-soft)">협업 후 자연 조정</td></tr>
-        <tr><td style="font-size:12px;color:var(--ink-soft)">7/20~7/26</td><td style="text-align:right;color:var(--success);font-weight:600">38,170,250</td><td style="text-align:right">672</td><td style="text-align:right">859</td><td style="text-align:right"><span class="badge bs">11.3%</span></td><td style="font-size:12px;color:var(--ink-soft)">SUMMER CLEARANCE 피크</td></tr>
-        <tr><td style="font-size:12px;color:var(--ink-soft)">7/27~8/2</td><td style="text-align:right">11,726,596</td><td style="text-align:right">251</td><td style="text-align:right">515</td><td style="text-align:right"><span class="badge bw">19.5%</span></td><td style="font-size:12px;color:var(--ink-soft)">클리어런스 종료·크픽 협업 시작</td></tr>
-      </table>
-    </div>
-
-    <div class="section-title">7월 핵심 지표</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">최고 순매출 주</div><div class="mv" style="font-size:15px">38,170,250</div><div class="md neu">7/20~7/26 (CLEARANCE)</div></div>
-      <div class="mc"><div class="ml">최다 주문 주</div><div class="mv">672건</div><div class="md neu">7/20~7/26</div></div>
-      <div class="mc"><div class="ml">최다 신규회원 주</div><div class="mv">1,230명</div><div class="md neu">7/6~7/12 (SO BASIC)</div></div>
-      <div class="mc"><div class="ml">최저 취반률 주</div><div class="mv">8.9%</div><div class="md neu">7/6~7/12</div></div>
-    </div>
-
-    <div class="section-title">7월 주요 인사이트</div>
-    <div class="alert a-s">✅ SO BASIC 협업(7/6주) + SUMMER CLEARANCE(7/20주) — 두 번의 피크로 7월 역대 최고 월간 매출 달성</div>
-    <div class="alert a-s" style="margin-top:6px">✅ 피크 주간 취반률 8.9~11.3% — 대규모 주문에도 반품·취소 관리 우수</div>
-    <div class="alert a-d" style="margin-top:6px">🔻 ATTENTION PANTS 6주 연속 반품 집중 — 7월 내내 반품 상위권. 사이즈/핏 CS 정리 및 상세페이지 개선 필요</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ MELTING SKIRT 8주 연속 조회 상위 — 이탈률 45~60%대 유지. 감소 추세는 긍정적이나 전환 개선 지속 필요</div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;margin-top:6px">💡 크픽 협업(AIR FLOW SET-UP · MELTING SKIRT · SO BASIC) 7/28~8/6 진행 중 — 다음 주 데이터에서 본격 효과 확인 예정</div>
-  </div>
-
-  <!-- ===================== CS 현황 ===================== -->
-  <div class="week-panel" id="cs">
-    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
-      <span style="font-size:18px;font-weight:500;color:var(--ink);">CS · 교반품 현황</span>
-      <span style="font-size:12px;color:var(--ink-soft);">2026년 7월 자사몰 기준</span>
-    </div>
-
-    <div class="section-title">7월 CS 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">반품·교환 (7월단)</div><div class="mv">117건</div><div class="md neu">단순변심 79 · 사이즈 28 · 오배송 9</div></div>
-      <div class="mc"><div class="ml">불량 (7월불량)</div><div class="mv">4건</div><div class="md neu">SO BASIC T-SHIRT 3 · REFINED WORK JACKET 1</div></div>
-      <div class="mc"><div class="ml">8월 이월 반품</div><div class="mv">9건</div><div class="md neu">SO BASIC 6 · AIR FLOW 1 · ATTENTION PANTS 1</div></div>
-      <div class="mc"><div class="ml">사유별 1위</div><div class="mv" style="font-size:16px;">단순변심</div><div class="md neu">전체의 67.5% (79건)</div></div>
-    </div>
-
-    <div class="section-title">상품별 반품·교환 TOP</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:60px;">건수</th><th style="width:110px;"></th><th>주요 사유</th></tr>
-        <tr><td><strong>ATTENTION PANTS</strong></td><td style="text-align:right;font-weight:600;color:var(--danger);">35건</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td><td><span class="badge bd" style="font-size:10px;">사이즈 10</span> <span class="badge bw" style="font-size:10px;">단순변심 25</span></td></tr>
-        <tr><td>SO BASIC T-SHIRT</td><td style="text-align:right;font-weight:600;">23건</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:66%"></div></div></div></td><td><span class="badge bw" style="font-size:10px;">단순변심·사이즈 혼재</span></td></tr>
-        <tr><td>SO COOL BANDING PANTS</td><td style="text-align:right;font-weight:600;">21건</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:60%"></div></div></div></td><td><span class="badge bw" style="font-size:10px;">단순변심·소재불만</span></td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right;font-weight:600;">14건</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:40%"></div></div></div></td><td><span class="badge bw" style="font-size:10px;">단순변심</span></td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;font-weight:600;">7건</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:20%"></div></div></div></td><td><span class="badge bw" style="font-size:10px;">단순변심</span></td></tr>
-      </table>
-    </div>
-
-    <div class="section-title">ATTENTION PANTS 클레임 패턴</div>
-    <div style="background:#F9F7F4;border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:12px;line-height:1.7;">
-      <div style="margin-bottom:6px;"><span style="background:#FDE8E8;color:#A8523F;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600;margin-right:4px;">길이/총장</span>"너무 길어요" · "길이가 너무 길어요" · "크고 길어서 안어울려요" · "사이즈가 크고 너무 길어요"</div>
-      <div style="margin-bottom:6px;"><span style="background:#FDE8E8;color:#A8523F;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600;margin-right:4px;">핏·실루엣</span>"너무 심한 나팔바지" · "밑단이 넘 넓어서 반품" · "핏이 사진과 다름" · "엉덩이 커버 과함"</div>
-      <div><span style="background:#FEF3E2;color:#B8895A;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600;margin-right:4px;">소재</span>"여름소재가 아님" · "여름에 입을 두께가 아닙니다"</div>
-    </div>
-    <div class="alert a-d">🔻 핵심 이슈: 밑단 너비(나팔 실루엣)·총장 과다 반복 — 상세페이지 착용 가이드·실측 치수 보강 권장</div>
-
-    <div class="section-title">SO COOL BANDING PANTS 클레임 패턴</div>
-    <div style="background:#F9F7F4;border-radius:10px;padding:12px 14px;margin-bottom:8px;font-size:12px;line-height:1.7;">
-      <div style="margin-bottom:6px;"><span style="background:#FEF3E2;color:#B8895A;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600;margin-right:4px;">소재</span>"너무 비침" · "너무 얇아서 환불" · "시원해 보였는데 더워요" · "타사 대비 가격 불만"</div>
-      <div><span style="background:#EDE9FD;color:#6B52CC;font-size:10px;padding:1px 6px;border-radius:4px;font-weight:600;margin-right:4px;">사이즈</span>"사이즈 커요" · "작아요" · "골반 쪽이 엄청 떠요"</div>
-    </div>
-    <div class="alert a-w">⚠ "비침·얇음" 키워드 반복 — 상세페이지 소재 두께·비침 여부 명시 필요</div>
-
-    <div class="section-title">오배송 현황 (7월 자사몰 9건)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;">건수</th><th>내용</th></tr>
-        <tr><td>GAINSBOURG MUSTANG VEST</td><td style="text-align:right;">2건</td><td style="font-size:12px;">클리어런스 — S 사이즈로 오배송</td></tr>
-        <tr><td>DAILY TWO-TUCK PANTS</td><td style="text-align:right;">2건</td><td style="font-size:12px;">클리어런스 — 사이즈 불일치</td></tr>
-        <tr><td>SO BASIC T-SHIRT</td><td style="text-align:right;">3건</td><td style="font-size:12px;">3팩 옐로우 누락 2건 · 색상 오배송 1건</td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right;">1건</td><td style="font-size:12px;">블랙→그레이 오배송</td></tr>
-        <tr><td>PLEAST MINI SKIRT</td><td style="text-align:right;">1건</td><td style="font-size:12px;">사이즈 오배송</td></tr>
-      </table>
-    </div>
-    <div class="alert a-w">⚠ 클리어런스 기간 오배송 집중 — 대규모 발송 시 출고 검수 강화 필요</div>
-
-    <div class="section-title">불량 현황</div>
-    <div class="two-col">
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px;">7월 불량 <span style="font-size:20px;">4건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);">SO BASIC T-SHIRT 3건<br>REFINED WORK JACKET 1건</div>
-      </div>
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px;">8월 이월 불량 <span style="font-size:20px;">1건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);">SO BASIC T-SHIRT 1건<br>목부분 박음질 불량</div>
-      </div>
-    </div>
-    <div class="alert a-w" style="margin-top:8px;">⚠ SO BASIC T-SHIRT 불량 누적 4건 — 박음질 QC 점검 권장</div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;margin-top:6px;">💡 SO BASIC T-SHIRT 사이즈 반품 반복 — FREE 사이즈 정책 검토 또는 실측·핏 가이드 보강 고려</div>
-  </div>
-
-  <!-- ===================== WEEK 10 ===================== -->
-  <div class="week-panel" id="w10">
-    <div class="alert a-w">⚠ 크픽 협업 종료 후 첫 일반 주간 — 순매출 6,248,050원. 8/14 로직트리 기획전 준비 중</div>
-
-    <div class="section-title">매출 요약</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">순매출</div><div class="mv">6,248,050</div><div class="md down">▼ 46.7% vs 전주(11,726,596)</div></div>
-      <div class="mc"><div class="ml">결제합계</div><div class="mv">7,217,930</div><div class="md down">▼ 50.8% vs 전주</div></div>
-      <div class="mc"><div class="ml">주문수 / 품목수</div><div class="mv">81 / 81</div><div class="md down">▼ 67.7% vs 전주(251건)</div></div>
-      <div class="mc"><div class="ml">신규회원</div><div class="mv">108명</div><div class="md down">▼ 79.0% vs 전주(515명)</div></div>
-    </div>
-    <div class="metric-grid" style="margin-top:10px">
-      <div class="mc"><div class="ml">상품구매금액</div><div class="mv">12,488,400</div><div class="md neu">할인률 40.0%</div></div>
-      <div class="mc"><div class="ml">할인+쿠폰</div><div class="mv">4,892,050</div><div class="md neu">할인 4,788,950 + 쿠폰 103,100</div></div>
-      <div class="mc"><div class="ml">환불합계</div><div class="mv">969,880</div><div class="md up">▼ 67.2% vs 전주 (개선)</div></div>
-      <div class="mc"><div class="ml">네이버포인트</div><div class="mv">601,330</div><div class="md neu">—</div></div>
-    </div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;">💡 협업 제외 자사몰 기준선 6.2M 확인. 환불 대폭 감소(전주 295만→97만)로 실질 수익 개선</div>
-
-    <div class="section-title">판매 TOP 상품</div>
-    <div class="card">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:60px">판매수</th><th style="width:110px"></th><th style="text-align:right;width:55px">취소</th><th style="text-align:right;width:55px">반품</th></tr>
-        <tr><td><strong>AIR FLOW SET-UP</strong></td><td style="text-align:right;font-weight:600">14</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%;background:#5C7A5C"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td><td style="text-align:right"><span class="badge bw">1</span></td></tr>
-        <tr><td>SO COOL BANDING PANTS <span class="badge bi" style="font-size:10px">16th/17th</span></td><td style="text-align:right;font-weight:600">13</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:93%"></div></div></div></td><td style="text-align:right"><span class="badge bw">1</span></td><td style="text-align:right"><span class="badge bd">3</span></td></tr>
-        <tr><td>COLOR POP CARDIGAN</td><td style="text-align:right;font-weight:600">11</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:79%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td><td style="text-align:right"><span class="badge bw">1</span></td></tr>
-        <tr><td>ATTENTION PANTS <span class="badge bi" style="font-size:10px">5th</span></td><td style="text-align:right;font-weight:600">8</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:57%"></div></div></div></td><td style="text-align:right"><span class="badge bd">2</span></td><td style="text-align:right"><span class="badge bd">2</span></td></tr>
-        <tr><td>[3 PACK] SO BASIC T-SHIRT</td><td style="text-align:right;font-weight:600">6</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:43%;background:#5C7A5C"></div></div></div></td><td style="text-align:right"><span class="badge bw">1</span></td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td>[2 PACK] SO BASIC T-SHIRT</td><td style="text-align:right;font-weight:600">4</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:29%;background:#5C7A5C"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td><td style="text-align:right"><span class="badge bw">1</span></td></tr>
-        <tr><td style="color:var(--ink-soft);font-size:12px">SIMPLE PUNCHING SOCKS · GLOW SOFT TANK 외 다수</td><td style="text-align:right;color:var(--ink-soft)">각 1~6</td><td></td><td></td><td></td></tr>
-      </table>
-    </div>
-    <div class="alert a-s">✅ AIR FLOW SET-UP 협업 종료 후에도 14개 판매 유지 — 자체 수요 확인</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ ATTENTION PANTS 취소2+반품2 — 판매 8건 대비 취반률 50%. 7주 연속 반품</div>
-
-    <div class="section-title">취소 · 반품</div>
-    <div class="two-col">
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">취소 <span style="font-size:22px">6건</span></div>
-        <div style="font-size:12px;color:var(--success);margin-bottom:8px">▼ vs 전주 27건 (대폭 감소)</div>
-        <div style="font-size:12px;color:var(--ink-soft)">ATTENTION PANTS 2 · MELTING SKIRT 2 · SO BASIC [3P] 1 · SO COOL BANDING PANTS 1</div>
-      </div>
-      <div class="card">
-        <div style="font-size:13px;font-weight:500;margin-bottom:6px">반품 <span style="font-size:22px">9건</span></div>
-        <div style="font-size:12px;color:var(--ink-soft);margin-bottom:8px">취반률 18.5%</div>
-        <div style="font-size:12px;color:var(--ink-soft)">SO COOL BANDING PANTS 3 · ATTENTION PANTS 2 · AIR FLOW SET-UP 1 · COLOR POP CARDIGAN 1 · AIRY STRIPE SHIRT 1 · SO BASIC [2P] 1</div>
+      <div class="glossary-group">
+        <div class="glossary-group-title">기타 운영 용어</div>
+        <div class="glossary-grid" id="glossaryEtc"></div>
       </div>
     </div>
 
-    <div class="section-title">🛒 장바구니 분석</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">총 장바구니 담기</div><div class="mv">138건</div><div class="md down">▼ vs 전주 370건</div></div>
-      <div class="mc"><div class="ml">크픽 잔여 담기</div><div class="mv">29건</div><div class="md neu">AIR FLOW 10 · SO BASIC 11</div></div>
-      <div class="mc"><div class="ml">장바구니 1위</div><div class="mv" style="font-size:15px">SO COOL</div><div class="md neu">BANDING PANTS 35건</div></div>
-      <div class="mc"><div class="ml">신규 관심</div><div class="mv" style="font-size:15px">COLOR POP</div><div class="md neu">CARDIGAN 23건</div></div>
-    </div>
-    <div class="card" style="margin-top:10px">
-      <table>
-        <tr><th>상품명</th><th style="text-align:right;width:70px">장바구니</th><th style="width:120px"></th><th style="text-align:right;width:75px">크픽 담기</th></tr>
-        <tr><td><strong>SO COOL BANDING PANTS</strong></td><td style="text-align:right;font-weight:600">35</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:100%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td>COLOR POP CARDIGAN</td><td style="text-align:right;font-weight:600">23</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:66%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td>SO BASIC T-SHIRT (2P+3P 합산)</td><td style="text-align:right;font-weight:600">12</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:34%;background:#5C7A5C"></div></div></div></td><td style="text-align:right;color:#5C7A5C;font-weight:600">11건</td></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right;font-weight:600">10</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:29%;background:#5C7A5C"></div></div></div></td><td style="text-align:right;color:#5C7A5C;font-weight:600">10건</td></tr>
-        <tr><td>AIRY STRIPE SHIRT</td><td style="text-align:right;font-weight:600">10</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:29%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-        <tr><td>ATTENTION PANTS</td><td style="text-align:right;font-weight:600">7</td><td><div style="display:flex;"><div class="bar-bg"><div class="bar-fill" style="width:20%"></div></div></div></td><td style="text-align:right;color:var(--ink-soft)">—</td></tr>
-      </table>
-    </div>
-    <div class="alert a-s">✅ COLOR POP CARDIGAN 장바구니 23건 — 판매 11건 대비 전환 여지 충분</div>
-    <div class="alert a-i" style="background:#EAEEF2;color:#6B7A8C;margin-top:6px">💡 크픽 잔여 담기 29건 — 협업 종료 후에도 대기 수요 존재. 리타겟 CRM 발송 검토 가능</div>
+  </main>
 
-    <div class="section-title">유입 · 트래픽 (GA4)</div>
-    <div class="metric-grid">
-      <div class="mc"><div class="ml">활성 사용자</div><div class="mv">4,300</div><div class="md down">▼ vs 전주 8,600</div></div>
-      <div class="mc"><div class="ml">총 사용자</div><div class="mv">4,500</div><div class="md down">▼ vs 전주 9,300</div></div>
-      <div class="mc"><div class="ml">평균 참여 시간</div><div class="mv">1분 01초</div><div class="md down">▼ vs 전주 1분 18초</div></div>
-      <div class="mc"><div class="ml">이벤트 수</div><div class="mv">5.1만</div><div class="md down">▼ vs 전주 13만</div></div>
-    </div>
-    <div class="card" style="margin-top:10px">
-      <div class="traf"><span>ig / paid</span><span style="font-weight:600">1,300명</span></div>
-      <div class="traf"><span>(direct) / (none)</span><span>1,000명</span></div>
-      <div class="traf"><span>linktr.ee / referral <span class="badge bs" style="font-size:10px;margin-left:4px">▲ 급증</span></span><span style="font-weight:600">838명</span></div>
-      <div class="traf"><span>m.search.naver.com / referral</span><span>385명</span></div>
-      <div class="traf"><span>cpik.kr / referral <span class="badge bs" style="font-size:10px;margin-left:4px">인플루언서 협업</span></span><span>113명</span></div>
-      <div class="traf"><span>th / paid</span><span>87명</span></div>
-    </div>
-    <div class="alert a-w">⚠ linktr.ee 838명으로 2위 급부상 — 전주 410명 대비 2배. 유입 경로 확인 필요</div>
-    <div class="alert a-w" style="margin-top:6px">⚠ ig/paid 1,300명으로 감소 — 광고 집행 규모 점검 필요</div>
+  <footer>
+    <span>LOVLOV 자사몰 성과 마케팅 · 문의: 혜인</span>
+    <span id="genTime"></span>
+  </footer>
 
-    <div class="section-title">관심 상품 (인기 페이지)</div>
-    <div class="card">
-      <table>
-        <tr><th>상품 / 페이지</th><th style="text-align:right">조회수</th><th style="text-align:right">이탈률</th></tr>
-        <tr><td>AIR FLOW SET-UP</td><td style="text-align:right">1,200회</td><td style="text-align:right"><span class="badge bd">57.1%</span></td></tr>
-        <tr><td>MELTING SKIRT</td><td style="text-align:right">446회</td><td style="text-align:right"><span class="badge bd">59.9%</span></td></tr>
-        <tr><td>COLOR POP CARDIGAN</td><td style="text-align:right">384회</td><td style="text-align:right"><span class="badge bs">12.9%</span></td></tr>
-        <tr><td>SUNLIT STRIPE SHIRT</td><td style="text-align:right">264회</td><td style="text-align:right"><span class="badge bs">9.1%</span></td></tr>
-        <tr><td>OUTER 카테고리</td><td style="text-align:right">193회</td><td style="text-align:right"><span class="badge bw">15.8%</span></td></tr>
-        <tr><td>SOFT BREEZE CARDIGAN</td><td style="text-align:right">111회</td><td style="text-align:right"><span class="badge bw">15.4%</span></td></tr>
-      </table>
-    </div>
-    <div class="alert a-w">⚠ AIR FLOW·MELTING SKIRT 이탈률 57~60% 지속 — 상세페이지 개선 필요</div>
-    <div class="alert a-s" style="margin-top:6px">✅ COLOR POP CARDIGAN 12.9% · SUNLIT STRIPE SHIRT 9.1% · SOFT BREEZE CARDIGAN 15.4% — 여름 마지막 신상 이탈률 극저, 시즌 말 대비 반응 우수</div>
-  </div>
-
-  <footer>LOVLOV 자사몰 주간 리포트 · 내부 공유용</footer>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-  // ── 드롭다운 토글 ──
-  function toggleGroup(id) {
-    const grp = document.getElementById(id);
-    const isOpen = grp.classList.contains('open');
-    // 다른 그룹 닫기
-    document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
-    if (!isOpen) grp.classList.add('open');
-  }
-  // 바깥 클릭 시 닫기
-  document.addEventListener('click', e => {
-    if (!e.target.closest('.nav-group')) {
-      document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
+// ---------- Tab switching ----------
+document.querySelectorAll('.tab').forEach(tab=>{
+  tab.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('view-'+tab.dataset.view).classList.add('active');
+  });
+});
+
+// ---------- Shared data ----------
+const days = ['8/13','8/14','8/15','8/16','8/17','8/18','8/19'];
+const spend = [59384,50492,82731,46707,72922,84682,71326];
+const imps  = [3880,3411,5916,3143,4403,5639,5423];
+const clicks= [175,122,264,143,196,189,266];
+
+const creatives = [
+{name:"0811 ATTENTION PANTS 4:5 이미지 (관호-3)", type:"IMAGE", imp:1955, clk:59, spend:22944, cpm:11738, ctr:3.02,
+ thumb:"https://scontent-atl3-1.xx.fbcdn.net/v/t45.1600-4/727845141_4031082880356482_5470715810594163539_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=fqIacz_VesYQ7kNvwHGQZPk&_nc_oc=Ado3GKKOtJDpb3qgrp9eNIV7rEbMUIleJ4jQVqYuwL2ApIRzFae2yBpoY7svyuBb8nM&_nc_zt=1&_nc_ht=scontent-atl3-1.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQKp6Ql0qa0y4OHDLRyZRNDdiflB0i4jA9y7pN5VHHQUFjRvv6Ki4rtHGXbalkC1mTLLPEi9deKKzw&oh=00_AQE9zn_kYyggdtITE6qbTFgntTbCS0Zog8iLC7JFd8xCrw&oe=6A82DBA2", status:"ACTIVE", pausedNote:null, purchasesTotal:3, purchasesYesterday:2},
+{name:"0727 ATTENTION PANTS 9:16 영상 (기초)", type:"VIDEO", imp:943, clk:70, spend:11509, cpm:12203, ctr:7.42,
+ thumb:"https://scontent-atl3-3.xx.fbcdn.net/v/t15.5256-10/759252344_1717635109357077_5606103433042649096_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=cyFcrlgrXDEQ7kNvwHtjhHZ&_nc_oc=Adpm8UJAek5vVwfVMikTOI_mvNNpf85L_bc3RsQg61uWuygKPytT8c-BOcqEBtfEUYM&_nc_zt=23&_nc_ht=scontent-atl3-3.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQKaDD4Ao1q3YCR_2KTGEMGMGWZ7KMbg_n-zAJ57jDapzG32cEqy1tMVi5mOLyIPFDOLHugIIjj8FA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQELWuxOoVOh1vQ2Vri8U03V_-cpI1SYk0taL8M1Wxt7wQ&oe=6A82EA93", status:"ACTIVE", pausedNote:null, purchasesTotal:13, purchasesYesterday:1},
+{name:"0730 ATTENTION PANTS 4:5 이미지 (동엽-3)", type:"IMAGE", imp:738, clk:54, spend:9173, cpm:12429, ctr:7.32,
+ thumb:"https://scontent-atl3-2.xx.fbcdn.net/v/t45.1600-4/756980778_27599852769674517_6370181227349732033_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=dw4fAxtGim8Q7kNvwGD_bus&_nc_oc=AdokCWnuiGrMFGNQuxuRre_fJT_YgyfRd1DtcqKNTFR0cjLGUMDi_pHW5XrB5uhcAR8&_nc_zt=1&_nc_ht=scontent-atl3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQIQ6BcTluCja9_v7JNewU-uMZkemH_UFKc5mJfGKDG92xmQGG2xoPe8lHrRWiNXQq8LqUuSXIkCqg&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=52f3c4&_nc_sid=58080a&oh=00_AQFE1pum3jajXBSbN1fC2S12CYSPwrCfrYnPYuu96yN7zw&oe=6A82F732", status:"ACTIVE", pausedNote:null, purchasesTotal:16, purchasesYesterday:1},
+{name:"0811 ATTENTION PANTS 9:16 영상 (관호-5)", type:"VIDEO", imp:419, clk:21, spend:6229, cpm:14867, ctr:5.01,
+ thumb:"https://scontent-lga3-2.xx.fbcdn.net/v/t15.5256-10/772521469_1700031414554780_2191910038243067739_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=S-69L3ubTyoQ7kNvwEEVif7&_nc_oc=AdpzFLLv9uCDoejXtmxSxc_eMxv1Q4WizC9eCgNDJW7lV6H2OrXuIitP_M5slO0bI8M&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=YtttdZgoaGvjVBv_m3rqLw&_nc_tpa=Q5bMBQK9PcZQNxCUbbGr4q9a5Cidj9WzHEcYkPNgD2prYEWJ4OUjIIttA-fyaAaVKR82cA2sZlCvSc6buw&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQGbp3PseHBmujdtTBZm7_js9sVgGmxvhPcMzlzMkzCXSA&oe=6A8C0F90", status:"PAUSED", pausedNote:null, purchasesTotal:0, purchasesYesterday:0},
+{name:"0811 ATTENTION PANTS 9:16 영상 (관호-4)", type:"VIDEO", imp:261, clk:11, spend:6017, cpm:23054, ctr:4.21,
+ thumb:"https://scontent-lga3-1.xx.fbcdn.net/v/t15.5256-10/771756247_1379869737062458_3532201998210044985_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=19Y-qqCNsTIQ7kNvwHb3WyT&_nc_oc=AdoYGc6QOYcGQKzOXMpet4iXFIX-HS3GwX0exLRhsIWhChJNd9xkQdg9bXTN-R6ZD_M&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&edm=AEZPnVgEAAAA&_nc_gid=YtttdZgoaGvjVBv_m3rqLw&_nc_tpa=Q5bMBQK6liVtWaPgOXf9jX7aFg7keHIci4L5E4OPBqYwDChqXrSIYY7JZwzlP2KkhqG8yEFb0sJC6IfsZg&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQHci3LLp71fSsExdgSK7ZI8Sop3-NTrXeSEYOQmXwtR2A&oe=6A8C2FE5", status:"PAUSED", pausedNote:null, purchasesTotal:0, purchasesYesterday:0},
+{name:"0811 ATTENTION PANTS 9:16 영상 (관호-2)", type:"VIDEO", imp:350, clk:11, spend:5339, cpm:15254, ctr:3.14,
+ thumb:"https://scontent-atl3-2.xx.fbcdn.net/v/t45.1600-4/707646859_3999842616813842_2303729944154742764_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=2UWAot_lvocQ7kNvwFzdCeJ&_nc_oc=AdqGMgwMXADYPHh4k3BAuPoQQgm618jhggM6IWtXzjsYcH2Gk5LadYSv1QWTGaddgAw&_nc_zt=1&_nc_ht=scontent-atl3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQIdac90ns-AkCOLsMMEUIpwHfnrcZ_c7SQ3wfgZEsbwkXqPQln-zAGBOE9soWvMOC8D_TelutR1CA&oh=00_AQHlISGMMyAca0cwUtt1pzNFD7SU-XpbuTakIcY6MH6FHg&oe=6A82DC75", status:"PAUSED", pausedNote:null, purchasesTotal:0, purchasesYesterday:0},
+];
+
+// ---------- Daily table (7/29 only, approximate split) ----------
+const dailyTop = [
+["0811 ATTENTION PANTS 4:5 이미지 (관호-3)",1955,59,3.02,22944,2,"https://scontent-atl3-1.xx.fbcdn.net/v/t45.1600-4/727845141_4031082880356482_5470715810594163539_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=fqIacz_VesYQ7kNvwHGQZPk&_nc_oc=Ado3GKKOtJDpb3qgrp9eNIV7rEbMUIleJ4jQVqYuwL2ApIRzFae2yBpoY7svyuBb8nM&_nc_zt=1&_nc_ht=scontent-atl3-1.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQKp6Ql0qa0y4OHDLRyZRNDdiflB0i4jA9y7pN5VHHQUFjRvv6Ki4rtHGXbalkC1mTLLPEi9deKKzw&oh=00_AQE9zn_kYyggdtITE6qbTFgntTbCS0Zog8iLC7JFd8xCrw&oe=6A82DBA2"],
+["0727 ATTENTION PANTS 9:16 영상 (기초)",943,70,7.42,11509,1,"https://scontent-atl3-3.xx.fbcdn.net/v/t15.5256-10/759252344_1717635109357077_5606103433042649096_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=cyFcrlgrXDEQ7kNvwHtjhHZ&_nc_oc=Adpm8UJAek5vVwfVMikTOI_mvNNpf85L_bc3RsQg61uWuygKPytT8c-BOcqEBtfEUYM&_nc_zt=23&_nc_ht=scontent-atl3-3.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQKaDD4Ao1q3YCR_2KTGEMGMGWZ7KMbg_n-zAJ57jDapzG32cEqy1tMVi5mOLyIPFDOLHugIIjj8FA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQELWuxOoVOh1vQ2Vri8U03V_-cpI1SYk0taL8M1Wxt7wQ&oe=6A82EA93"],
+["0730 ATTENTION PANTS 4:5 이미지 (동엽-3)",738,54,7.32,9173,1,"https://scontent-atl3-2.xx.fbcdn.net/v/t45.1600-4/756980778_27599852769674517_6370181227349732033_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=dw4fAxtGim8Q7kNvwGD_bus&_nc_oc=AdokCWnuiGrMFGNQuxuRre_fJT_YgyfRd1DtcqKNTFR0cjLGUMDi_pHW5XrB5uhcAR8&_nc_zt=1&_nc_ht=scontent-atl3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQIQ6BcTluCja9_v7JNewU-uMZkemH_UFKc5mJfGKDG92xmQGG2xoPe8lHrRWiNXQq8LqUuSXIkCqg&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=52f3c4&_nc_sid=58080a&oh=00_AQFE1pum3jajXBSbN1fC2S12CYSPwrCfrYnPYuu96yN7zw&oe=6A82F732"],
+["0811 ATTENTION PANTS 9:16 영상 (관호-5)",419,21,5.01,6229,0,"https://scontent-lga3-2.xx.fbcdn.net/v/t15.5256-10/772521469_1700031414554780_2191910038243067739_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=S-69L3ubTyoQ7kNvwEEVif7&_nc_oc=AdpzFLLv9uCDoejXtmxSxc_eMxv1Q4WizC9eCgNDJW7lV6H2OrXuIitP_M5slO0bI8M&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=YtttdZgoaGvjVBv_m3rqLw&_nc_tpa=Q5bMBQK9PcZQNxCUbbGr4q9a5Cidj9WzHEcYkPNgD2prYEWJ4OUjIIttA-fyaAaVKR82cA2sZlCvSc6buw&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQGbp3PseHBmujdtTBZm7_js9sVgGmxvhPcMzlzMkzCXSA&oe=6A8C0F90"],
+["0811 ATTENTION PANTS 9:16 영상 (관호-4)",261,11,4.21,6017,0,"https://scontent-lga3-1.xx.fbcdn.net/v/t15.5256-10/771756247_1379869737062458_3532201998210044985_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=19Y-qqCNsTIQ7kNvwHb3WyT&_nc_oc=AdoYGc6QOYcGQKzOXMpet4iXFIX-HS3GwX0exLRhsIWhChJNd9xkQdg9bXTN-R6ZD_M&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&edm=AEZPnVgEAAAA&_nc_gid=YtttdZgoaGvjVBv_m3rqLw&_nc_tpa=Q5bMBQK6liVtWaPgOXf9jX7aFg7keHIci4L5E4OPBqYwDChqXrSIYY7JZwzlP2KkhqG8yEFb0sJC6IfsZg&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQHci3LLp71fSsExdgSK7ZI8Sop3-NTrXeSEYOQmXwtR2A&oe=6A8C2FE5"],
+["0811 ATTENTION PANTS 9:16 영상 (관호-2)",350,11,3.14,5339,0,"https://scontent-atl3-2.xx.fbcdn.net/v/t45.1600-4/707646859_3999842616813842_2303729944154742764_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=2UWAot_lvocQ7kNvwFzdCeJ&_nc_oc=AdqGMgwMXADYPHh4k3BAuPoQQgm618jhggM6IWtXzjsYcH2Gk5LadYSv1QWTGaddgAw&_nc_zt=1&_nc_ht=scontent-atl3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQIdac90ns-AkCOLsMMEUIpwHfnrcZ_c7SQ3wfgZEsbwkXqPQln-zAGBOE9soWvMOC8D_TelutR1CA&oh=00_AQHlISGMMyAca0cwUtt1pzNFD7SU-XpbuTakIcY6MH6FHg&oe=6A82DC75"],
+];
+
+function fillTable(id, rows, withCpm){
+  const tbody = document.getElementById(id);
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    if(withCpm){
+      const [name,imp,clk,ctr,cpm,spend,status,thumb] = r;
+      const statusCell = status === 'PAUSED'
+        ? '<span style="color:var(--red);font-weight:700;">일시정지</span>'
+        : '<span style="color:var(--green);font-weight:700;">집행중</span>';
+      const nameCell = thumb
+        ? `<span class="name-hover">${name}<span class="hover-preview"><img src="${thumb}" alt="${name}" loading="lazy"></span></span>`
+        : name;
+      if(status === 'PAUSED') tr.style.opacity = '0.7';
+      tr.innerHTML = `<td>${nameCell}</td><td class="num">${imp.toLocaleString()}</td><td class="num">${clk.toLocaleString()}</td><td class="num">${ctr.toFixed(2)}%</td><td class="num">₩${cpm.toLocaleString()}</td><td class="num">₩${spend.toLocaleString()}</td><td class="num">${statusCell}</td>`;
+    }else{
+      const [name,imp,clk,ctr,spend,purchase,thumb] = r;
+      const cvr = clk > 0 ? (purchase/clk*100) : 0;
+      const purchaseCell = `${purchase}건 <span style="color:var(--ink-soft);font-weight:500;">(CVR ${cvr.toFixed(2)}%)</span>`;
+      const nameCell = thumb
+        ? `<span class="name-hover">${name}<span class="hover-preview"><img src="${thumb}" alt="${name}" loading="lazy"></span></span>`
+        : name;
+      tr.innerHTML = `<td>${nameCell}</td><td class="num">${imp.toLocaleString()}</td><td class="num">${clk.toLocaleString()}</td><td class="num">${ctr.toFixed(2)}%</td><td class="num">₩${spend.toLocaleString()}</td><td class="num">${purchaseCell}</td>`;
     }
+    tbody.appendChild(tr);
   });
+}
+fillTable('dailyTableBody', dailyTop, false);
 
-  // ── 패널 전환 ──
-  function showPanel(target) {
-    document.querySelectorAll('.week-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.nav-single').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-dropdown-item').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.nav-group-btn').forEach(b => b.classList.remove('active-group'));
+const weeklyRows = [
+["0727 ATTENTION PANTS 9:16 영상 (기초)",2498,135,5.4,11934,29812,"ACTIVE","https://scontent-atl3-3.xx.fbcdn.net/v/t15.5256-10/759252344_1717635109357077_5606103433042649096_n.jpg?_nc_cat=109&ccb=1-7&_nc_ohc=cyFcrlgrXDEQ7kNvwHtjhHZ&_nc_oc=Adpm8UJAek5vVwfVMikTOI_mvNNpf85L_bc3RsQg61uWuygKPytT8c-BOcqEBtfEUYM&_nc_zt=23&_nc_ht=scontent-atl3-3.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQKaDD4Ao1q3YCR_2KTGEMGMGWZ7KMbg_n-zAJ57jDapzG32cEqy1tMVi5mOLyIPFDOLHugIIjj8FA&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQELWuxOoVOh1vQ2Vri8U03V_-cpI1SYk0taL8M1Wxt7wQ&oe=6A82EA93"],
+["0811 ATTENTION PANTS 4:5 이미지 (관호-3)",2313,70,3.03,12344,28552,"ACTIVE","https://scontent-atl3-1.xx.fbcdn.net/v/t45.1600-4/727845141_4031082880356482_5470715810594163539_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=fqIacz_VesYQ7kNvwHGQZPk&_nc_oc=Ado3GKKOtJDpb3qgrp9eNIV7rEbMUIleJ4jQVqYuwL2ApIRzFae2yBpoY7svyuBb8nM&_nc_zt=1&_nc_ht=scontent-atl3-1.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQKp6Ql0qa0y4OHDLRyZRNDdiflB0i4jA9y7pN5VHHQUFjRvv6Ki4rtHGXbalkC1mTLLPEi9deKKzw&oh=00_AQE9zn_kYyggdtITE6qbTFgntTbCS0Zog8iLC7JFd8xCrw&oe=6A82DBA2"],
+["0730 ATTENTION PANTS 4:5 이미지 (동엽-3)",1174,67,5.71,12475,14646,"ACTIVE","https://scontent-atl3-2.xx.fbcdn.net/v/t45.1600-4/756980778_27599852769674517_6370181227349732033_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=dw4fAxtGim8Q7kNvwGD_bus&_nc_oc=AdokCWnuiGrMFGNQuxuRre_fJT_YgyfRd1DtcqKNTFR0cjLGUMDi_pHW5XrB5uhcAR8&_nc_zt=1&_nc_ht=scontent-atl3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQIQ6BcTluCja9_v7JNewU-uMZkemH_UFKc5mJfGKDG92xmQGG2xoPe8lHrRWiNXQq8LqUuSXIkCqg&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=52f3c4&_nc_sid=58080a&oh=00_AQFE1pum3jajXBSbN1fC2S12CYSPwrCfrYnPYuu96yN7zw&oe=6A82F732"],
+["0811 ATTENTION PANTS 9:16 영상 (관호-2)",548,19,3.47,18151,9947,"PAUSED","https://scontent-atl3-2.xx.fbcdn.net/v/t45.1600-4/707646859_3999842616813842_2303729944154742764_n.jpg?_nc_cat=101&ccb=1-7&_nc_sid=d5bd00&_nc_ohc=2UWAot_lvocQ7kNvwFzdCeJ&_nc_oc=AdqGMgwMXADYPHh4k3BAuPoQQgm618jhggM6IWtXzjsYcH2Gk5LadYSv1QWTGaddgAw&_nc_zt=1&_nc_ht=scontent-atl3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=Xhd1qiAtORSFBeMHpm5u5w&_nc_tpa=Q5bMBQIdac90ns-AkCOLsMMEUIpwHfnrcZ_c7SQ3wfgZEsbwkXqPQln-zAGBOE9soWvMOC8D_TelutR1CA&oh=00_AQHlISGMMyAca0cwUtt1pzNFD7SU-XpbuTakIcY6MH6FHg&oe=6A82DC75"],
+["0727 ATTENTION PANTS 9:16 영상 (기초-2)",542,14,2.58,16483,8934,"ACTIVE",""],
+["0811 ATTENTION PANTS 9:16 영상 (관호-5)",500,22,4.4,16518,8259,"PAUSED","https://scontent-lga3-2.xx.fbcdn.net/v/t15.5256-10/772521469_1700031414554780_2191910038243067739_n.jpg?_nc_cat=105&ccb=1-7&_nc_ohc=S-69L3ubTyoQ7kNvwEEVif7&_nc_oc=AdpzFLLv9uCDoejXtmxSxc_eMxv1Q4WizC9eCgNDJW7lV6H2OrXuIitP_M5slO0bI8M&_nc_zt=23&_nc_ht=scontent-lga3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=YtttdZgoaGvjVBv_m3rqLw&_nc_tpa=Q5bMBQK9PcZQNxCUbbGr4q9a5Cidj9WzHEcYkPNgD2prYEWJ4OUjIIttA-fyaAaVKR82cA2sZlCvSc6buw&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQGbp3PseHBmujdtTBZm7_js9sVgGmxvhPcMzlzMkzCXSA&oe=6A8C0F90"],
+["0811 ATTENTION PANTS 9:16 영상 (관호-4)",362,13,3.59,22384,8103,"PAUSED","https://scontent-lga3-1.xx.fbcdn.net/v/t15.5256-10/771756247_1379869737062458_3532201998210044985_n.jpg?_nc_cat=110&ccb=1-7&_nc_ohc=19Y-qqCNsTIQ7kNvwHb3WyT&_nc_oc=AdoYGc6QOYcGQKzOXMpet4iXFIX-HS3GwX0exLRhsIWhChJNd9xkQdg9bXTN-R6ZD_M&_nc_zt=23&_nc_ht=scontent-lga3-1.xx&edm=AEZPnVgEAAAA&_nc_gid=YtttdZgoaGvjVBv_m3rqLw&_nc_tpa=Q5bMBQK6liVtWaPgOXf9jX7aFg7keHIci4L5E4OPBqYwDChqXrSIYY7JZwzlP2KkhqG8yEFb0sJC6IfsZg&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=5fad0e&_nc_sid=58080a&oh=00_AQHci3LLp71fSsExdgSK7ZI8Sop3-NTrXeSEYOQmXwtR2A&oe=6A8C2FE5"],
+["0812 MELTING SKIRT 4:5 이미지 (동엽-1)",553,24,4.34,13566,7502,"PAUSED",""],
+["0811 ATTENTION PANTS 4:5 이미지 (관호-1)",275,10,3.64,16185,4451,"PAUSED",""],
+["0811 MELTING SKIRT 9:16 영상 (관호-1)",282,9,3.19,15142,4270,"PAUSED",""],
+["0811 MELTING SKIRT 9:16 영상 (관호-3)",231,9,3.9,18169,4197,"PAUSED",""],
+["0812 FLOW HAREM PANTS 4:5 이미지 (동엽-2)",293,15,5.12,14304,4191,"PAUSED",""],
+["0811 MELTING SKIRT 9:16 영상 (관호-2)",222,7,3.15,18644,4139,"PAUSED",""],
+["0811 MELTING SKIRT 4:5 이미지 (관호-2)",298,10,3.36,13574,4045,"PAUSED",""],
+["0812 FLOW HAREM PANTS 4:5 이미지 (동엽-4)",256,8,3.13,15727,4026,"PAUSED",""],
+["0811 MELTING SKIRT 9:16 영상 (관호-8)",270,9,3.33,14230,3842,"PAUSED",""],
+["0811 MELTING SKIRT 4:5 이미지 (관호-1)",128,0,0.0,17633,2257,"PAUSED",""],
+["0811 MELTING SKIRT 9:16 영상 (관호-4)",101,3,2.97,21475,2169,"PAUSED",""],
+["0812 MELTING SKIRT 4:5 이미지 (동엽-2)",145,10,6.9,9538,1383,"PAUSED",""],
+["0812 FLOW HAREM PANTS 4:5 이미지 (동엽-3)",71,1,1.41,18070,1283,"PAUSED",""],
+];
+fillTable('weeklyTableBody', weeklyRows, true);
 
-    const panel = document.getElementById(target);
-    if (panel) panel.classList.add('active');
+// ---------- Creative grid ----------
+const grid = document.getElementById('creativeGrid');
+const avgCtr = creatives.reduce((a,c)=>a+c.ctr,0)/creatives.length;
+creatives.forEach(c=>{
+  const div = document.createElement('div');
+  div.className = 'creative-card';
+  if(c.status === 'PAUSED') div.style.opacity = '0.72';
+  const badge = c.ctr >= avgCtr ? '<span class="perf-badge good">CTR 평균 이상</span>' : (c.ctr < 4 ? '<span class="perf-badge bad">CTR 저조</span>' : '');
+  const statusBadge = c.status === 'PAUSED'
+    ? '<span class="perf-badge bad" style="background:#EDEBE7;color:#6B6862;">일시정지</span>'
+    : '<span class="perf-badge good">집행중</span>';
+  const spendLine = `<div style="font-size:12px;color:var(--ink-soft);border-top:1px solid var(--line);padding-top:8px;">광고비 <b style="color:var(--ink);">₩${c.spend.toLocaleString()}</b></div>`;
+  const purchaseLine = c.purchasesTotal != null
+    ? `<div style="font-size:12px;padding-top:6px;">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+          <span style="color:var(--ink-soft);">구매전환(누적)</span>
+          <span style="font-weight:700;color:${c.purchasesTotal>0?'var(--green)':'var(--ink-soft)'};">${c.purchasesTotal}건</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+          <span style="color:var(--ink-soft);">구매전환(전일)</span>
+          <span style="font-weight:700;color:${c.purchasesYesterday>0?'var(--green)':'var(--ink-soft)'};">${c.purchasesYesterday}건</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:var(--ink-soft);">전일 CVR</span>
+          <span style="font-weight:700;color:${c.clk>0 && (c.purchasesYesterday/c.clk*100)>0?'var(--green)':'var(--ink-soft)'};">${c.clk>0 ? (c.purchasesYesterday/c.clk*100).toFixed(2) : '0.00'}%</span>
+        </div>
+      </div>`
+    : '';
+  const pausedNoteLine = c.pausedNote
+    ? `<div style="font-size:10.5px;color:var(--red);background:var(--red-soft);border-radius:6px;padding:5px 8px;margin-top:4px;">${c.pausedNote}</div>`
+    : '';
+  div.innerHTML = `
+    <div class="thumb-wrap">
+      <img src="${c.thumb}" alt="${c.name}" loading="lazy" onerror="this.parentElement.style.background='var(--brown-soft)';this.remove();">
+      <span class="type-badge">${c.type}</span>
+    </div>
+    <div class="creative-body">
+      <div class="creative-title">${c.name}</div>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">${statusBadge}${badge}</div>
+      <div class="creative-stats">
+        <span>노출 <b>${c.imp.toLocaleString()}</b></span>
+        <span>클릭 <b>${c.clk.toLocaleString()}</b></span>
+        <span>CTR <b>${c.ctr.toFixed(2)}%</b></span>
+        <span>CPM <b>₩${c.cpm.toLocaleString()}</b></span>
+      </div>
+      ${spendLine}
+      ${purchaseLine}
+      ${pausedNoteLine}
+    </div>
+  `;
+  grid.appendChild(div);
+});
 
-    // 단일 탭 활성
-    document.querySelectorAll('.nav-single').forEach(t => {
-      if (t.dataset.target === target) t.classList.add('active');
-    });
-    // 드롭다운 아이템 활성 + 부모 그룹 버튼 활성
-    document.querySelectorAll('.nav-dropdown-item').forEach(t => {
-      if (t.dataset.target === target) {
-        t.classList.add('active');
-        t.closest('.nav-group').querySelector('.nav-group-btn').classList.add('active-group');
-      }
-    });
-    // 드롭다운 닫기
-    document.querySelectorAll('.nav-group').forEach(g => g.classList.remove('open'));
-  }
-
-  // 단일 탭 클릭
-  document.querySelectorAll('.nav-single').forEach(t => {
-    t.addEventListener('click', () => showPanel(t.dataset.target));
+// ---------- W컨셉 협력 / 29CM 협력 ----------
+function renderSimpleCreativeGrid(gridId, list){
+  const g = document.getElementById(gridId);
+  list.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'creative-card';
+    if(c.status === 'PAUSED') div.style.opacity = '0.72';
+    const statusBadge = c.status === 'PAUSED'
+      ? '<span class="perf-badge bad" style="background:#EDEBE7;color:#6B6862;">미집행/정지</span>'
+      : '<span class="perf-badge good">집행중</span>';
+    const statLine = c.spend > 0
+      ? `<div class="creative-stats">
+          <span>노출 <b>${c.imp.toLocaleString()}</b></span>
+          <span>클릭 <b>${c.clk.toLocaleString()}</b></span>
+          <span>CTR <b>${c.ctr.toFixed(2)}%</b></span>
+          <span>광고비 <b>₩${c.spend.toLocaleString()}</b></span>
+        </div>`
+      : `<div style="font-size:11.5px;color:var(--ink-soft);">집행 데이터 없음</div>`;
+    const purchaseLine = c.purchasesTotal != null
+      ? `<div style="font-size:12px;border-top:1px solid var(--line);padding-top:8px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+            <span style="color:var(--ink-soft);">구매전환(누적)</span>
+            <span style="font-weight:700;color:${c.purchasesTotal>0?'var(--green)':'var(--ink-soft)'};">${c.purchasesTotal}건</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:3px;">
+            <span style="color:var(--ink-soft);">구매전환(전일)</span>
+            <span style="font-weight:700;color:${c.purchasesYesterday>0?'var(--green)':'var(--ink-soft)'};">${c.purchasesYesterday}건</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:var(--ink-soft);">전일 CVR</span>
+            <span style="font-weight:700;color:${c.clk>0 && (c.purchasesYesterday/c.clk*100)>0?'var(--green)':'var(--ink-soft)'};">${c.clk>0 ? (c.purchasesYesterday/c.clk*100).toFixed(2) : '0.00'}%</span>
+          </div>
+        </div>`
+      : '';
+    div.innerHTML = `
+      <div class="thumb-wrap">
+        <img src="${c.thumb}" alt="${c.name}" loading="lazy" onerror="this.parentElement.style.background='var(--brown-soft)';this.remove();">
+        <span class="type-badge">${c.type}</span>
+      </div>
+      <div class="creative-body">
+        <div class="creative-title">${c.name}</div>
+        ${statusBadge}
+        ${statLine}
+        ${purchaseLine}
+      </div>
+    `;
+    g.appendChild(div);
   });
-  // 드롭다운 아이템 클릭
-  document.querySelectorAll('.nav-dropdown-item').forEach(t => {
-    t.addEventListener('click', () => showPanel(t.dataset.target));
+}
+
+const wconceptCreatives = [
+  {name:"(8/7 이후 할인율 재체크) 0805 쏨 쿨 밴딩 팬츠 4:5 이미지 (보람-2)", type:"IMAGE", imp:1577, clk:78, ctr:4.95, spend:18962, status:"ACTIVE",
+   thumb:"https://scontent-lga3-3.xx.fbcdn.net/v/t45.1600-4/762678476_122268542690265651_1091818616630202002_n.jpg?_nc_cat=102&ccb=1-7&_nc_ohc=LZAZGQeDmiYQ7kNvwGomF-j&_nc_oc=AdpaBktpXGfJ3WQ3db6aJW2DACiHgJaIuzE79zGAKjqQoOdsy577J6qbDfUxdDfuNfg&_nc_zt=1&_nc_ht=scontent-lga3-3.xx&edm=AEZPnVgEAAAA&_nc_gid=fIer5HqDHQDOBCynVqV8mQ&_nc_tpa=Q5bMBQKBocO7Mcts4dxPgeDg1cvflkSSqsIRwEkPgw32I2bHP-osYV1Y0sYq5lkimAyBKVbMBYOJpW50Fg&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=52f3c4&_nc_sid=58080a&oh=00_AQFrbwadAHbBb6rLcZtA6ZzEAtezBHJ4ujTuXDZp2CpgAw&oe=6A8C1438", purchasesTotal:8, purchasesYesterday:2},
+  {name:"(~18일 할인)0805 에어리 스트라이프 셔츠 4:5 이미지 (보람-3-a)", type:"IMAGE", imp:508, clk:15, ctr:2.95, spend:6606, status:"PAUSED",
+   thumb:"https://scontent-lga3-2.xx.fbcdn.net/v/t45.1600-4/764944196_122268546440265651_4091152760481070564_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=yKIBCHUZA_YQ7kNvwEFnUAa&_nc_oc=AdowTCbycaQVQSU68VHr-3GU29W6mJag9vQS7gcL8fM-vAjmmMsdmkmAz3EhbjvezTw&_nc_zt=1&_nc_ht=scontent-lga3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=fIer5HqDHQDOBCynVqV8mQ&_nc_tpa=Q5bMBQKzafK90Sb5O2wqkHvP8eVthsE_dTUiyDzBS9f3Fyy9FiE5H-y4iFE26BerBzr9l3qDkjOgUrxLog&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=52f3c4&_nc_sid=58080a&oh=00_AQFfxXnfDdU6hI2hdJX-kYeesjV0EcGV5wwpRyD0hyBuqw&oe=6A8C0EA9", purchasesTotal:21, purchasesYesterday:0},
+];
+renderSimpleCreativeGrid('wconceptGrid', wconceptCreatives);
+
+const cm29Creatives = [
+  {name:"0807 컬러 팝 가디건 4:5 이미지 (기초-4) 수정1회-관호", type:"IMAGE", imp:224, clk:14, ctr:6.25, spend:5605, status:"ACTIVE",
+   thumb:"https://scontent-lga3-2.xx.fbcdn.net/v/t45.1600-4/767269891_122144920611089394_4484085543413310738_n.jpg?_nc_cat=107&ccb=1-7&_nc_ohc=FGm-wIbrnKwQ7kNvwFbIPn1&_nc_oc=AdpTI1RIXAKnzejYGvFAIngEHlARsScPC4dwpscFJf4jBjrzaSyajJZnzjcNhloiiYE&_nc_zt=1&_nc_ht=scontent-lga3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=KiVGEr4Xf4z5bMEKH46siw&_nc_tpa=Q5bMBQIzl8fOn7c6Rh_bxVV8rCwwnHQI0yuFaxLX7WRdIUsx-VnGe9VsYMLFdUNdwILb5ijE_QgXR2dH1w&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=52f3c4&_nc_sid=58080a&oh=00_AQFbyKI4x2xYtLkhLvh3cN3AwRyDmpKFl2GiS4_4kFchcA&oe=6A8C13C1", purchasesTotal:7, purchasesYesterday:0},
+  {name:"0807 컬러 팝 가디건 4:5 이미지 (기초)", type:"IMAGE", imp:176, clk:10, ctr:5.68, spend:4851, status:"ACTIVE",
+   thumb:"https://scontent-lga3-2.xx.fbcdn.net/v/t45.1600-4/769097561_122144920041089394_6156773397776607247_n.jpg?_nc_cat=101&ccb=1-7&_nc_ohc=bMfP6TZJ5CsQ7kNvwHDhM4c&_nc_oc=AdppjTJwsRQHBjZn1dYPQM3EPITvJB3pXLmrG2sEV1K1xWUP0UjL7tx0WWNJlxJ0gG8&_nc_zt=1&_nc_ht=scontent-lga3-2.xx&edm=AEZPnVgEAAAA&_nc_gid=KiVGEr4Xf4z5bMEKH46siw&_nc_tpa=Q5bMBQIhgWPXZWKeFUbZg-Pq3wYwhcMrtUrq30Li-bshXtLTP75HRysk4Rxr4ne2CRzUQrvXCwhKxYDfzQ&stp=c0.5000x0.5000f_dst-emg0_p64x64_q75_tt6&ur=52f3c4&_nc_sid=58080a&oh=00_AQFY1aYQSSM-NDkYBpPK5CiLxZJNuDUrbYPM-_ihKAAY6w&oe=6A8C2DBC", purchasesTotal:7, purchasesYesterday:0},
+];
+renderSimpleCreativeGrid('cm29Grid', cm29Creatives);
+
+// ---------- Charts ----------
+function barChart(id,label,data,color){
+  new Chart(document.getElementById(id), {
+    type:'bar',
+    data:{labels:days,datasets:[{label:label,data:data,backgroundColor:color,borderRadius:4,maxBarThickness:28}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},title:{display:true,text:label,font:{size:12,weight:'600'},color:'#5B5A54',padding:{bottom:12}}},
+      scales:{y:{grid:{color:'#E8E3D9'},ticks:{callback:v=>(v/1000)+'k',color:'#898781',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#898781',font:{size:11}}}}}
   });
-
-  const labels = ['6/1–6/7', '6/8–6/14', '6/15–6/21', '6/22–6/28', '6/29–7/5', '7/6–7/12', '7/13–7/19', '7/20–7/26', '7/27–8/2', '8/3–8/9'];
-
-  // 전체추이 제목 자동 업데이트
-  const overviewTitle = document.getElementById('overview-title');
-  if (overviewTitle && labels.length > 0) {
-    const first = labels[0];
-    const last = labels[labels.length - 1];
-    overviewTitle.textContent = `${first} — ${last} · ${labels.length}주 전체 추이`;
-  }
-  const ink = '#2B2825';
-  const inkSoft = '#6B6560';
-  const accent = '#A8856B';
-  const danger = '#A8523F';
-  const success = '#5C7A5C';
-  const grid = '#E8E3DC';
-
-  Chart.defaults.font.family = "-apple-system, 'Apple SD Gothic Neo', sans-serif";
-  Chart.defaults.color = inkSoft;
-
-  new Chart(document.getElementById('chartRevenue'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: '순매출 (원)',
-          data: [4784850, 3318720, 4091886, 4200939, 5512273, 29432658, 12891945, 38170250, 11726596, 6248050],
-          borderColor: accent,
-          backgroundColor: 'rgba(168,133,107,0.12)',
-          fill: true,
-          tension: 0.35,
-          pointRadius: 5,
-          pointBackgroundColor: accent,
-          borderWidth: 2.5,
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, title: { display: true, text: '순매출 추이', align: 'start', color: ink, font: { size: 13, weight: '600' }, padding: { bottom: 14 } } },
-      scales: {
-        y: { grid: { color: grid }, ticks: { callback: v => (v/10000).toLocaleString() + '만' } },
-        x: { grid: { display: false } }
-      }
-    }
+}
+function lineChart(id,label,data,color){
+  new Chart(document.getElementById(id), {
+    type:'line',
+    data:{labels:days,datasets:[{label:label,data:data,borderColor:color,backgroundColor:color+'1a',fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:color}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},title:{display:true,text:label,font:{size:12,weight:'600'},color:'#5B5A54',padding:{bottom:12}}},
+      scales:{y:{grid:{color:'#E8E3D9'},ticks:{callback:v=>(v/1000)+'k',color:'#898781',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#898781',font:{size:11}}}}}
   });
+}
 
-  new Chart(document.getElementById('chartOrders'), {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: '주문수', data: [91, 83, 98, 93, 109, 560, 252, 672, 251, 81], backgroundColor: accent, borderRadius: 6 },
-        { label: '신규회원', data: [71, 75, 103, 55, 88, 1230, 403, 859, 515, 108], backgroundColor: '#D9C5B0', borderRadius: 6 }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 11 } } }, title: { display: true, text: '주문수 · 신규회원', align: 'start', color: ink, font: { size: 13, weight: '600' }, padding: { bottom: 14 } } },
-      scales: { y: { grid: { color: grid } }, x: { grid: { display: false } } }
-    }
-  });
+barChart('dailySpendChart','일별 광고비 소진',spend,'#6B5842');
+lineChart('dailyImpChart','일별 노출수',imps,'#3D7068');
+barChart('weeklySpendChart','일별 광고비 소진',spend,'#6B5842');
+lineChart('weeklyImpChart','일별 노출수',imps,'#3D7068');
 
-  new Chart(document.getElementById('chartReturnRate'), {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [
-        {
-          label: '취반률 (%)',
-          data: [20, 31.3, 11.2, 30.1, 28.4, 8.9, 16.3, 11.3, 19.5, 18.5],
-          borderColor: danger,
-          backgroundColor: 'rgba(168,82,63,0.10)',
-          fill: true,
-          tension: 0.35,
-          pointRadius: 5,
-          pointBackgroundColor: danger,
-          borderWidth: 2.5,
-        }
-      ]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false }, title: { display: true, text: '취소+반품률 추이', align: 'start', color: ink, font: { size: 13, weight: '600' }, padding: { bottom: 14 } } },
-      scales: { y: { grid: { color: grid }, ticks: { callback: v => v + '%' } }, x: { grid: { display: false } } }
-    }
+new Chart(document.getElementById('monthlyChart'), {
+  type:'bar',
+  data:{labels:['1주차 (6/29-7/5)','2주차 (7/6-7/12)','3주차 (7/13-7/19)','4주차 (7/20-7/26)','5주차 (7/27-7/30)'],
+    datasets:[{label:'광고비',data:[2921601,3509385,3546722,5994259,1971110],backgroundColor:'#6B5842',borderRadius:4,maxBarThickness:60}]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{y:{grid:{color:'#E8E3D9'},ticks:{callback:v=>(v/1000000).toFixed(1)+'M',color:'#898781',font:{size:11}}},x:{grid:{display:false},ticks:{color:'#898781',font:{size:11}}}}}
+});
+
+new Chart(document.getElementById('alltimeChart'), {
+  data:{labels:['5월','6월','7월'],
+    datasets:[
+      {type:'bar',label:'광고비(KRW)',data:[10850200,11050600,16969895],backgroundColor:'#6B5842',borderRadius:4,yAxisID:'y',maxBarThickness:60},
+      {type:'line',label:'평균 CTR(%)',data:[7.1,6.9,6.5],borderColor:'#B84A3E',backgroundColor:'#B84A3E',tension:0.3,pointRadius:5,yAxisID:'y1'}
+    ]},
+  options:{responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{usePointStyle:true,font:{size:12}}}},
+    scales:{
+      y:{position:'left',grid:{color:'#E8E3D9'},ticks:{callback:v=>(v/1000000).toFixed(0)+'M',color:'#898781',font:{size:11}}},
+      y1:{position:'right',grid:{display:false},ticks:{callback:v=>v+'%',color:'#898781',font:{size:11}}},
+      x:{grid:{display:false},ticks:{color:'#898781',font:{size:11}}}
+    }}
+});
+
+// ---------- Glossary ----------
+const glossary = {
+  glossaryCost: [
+    {abbr:"CPC", kr:"클릭당 비용", full:"Cost per Click",
+     desc:"광고가 1회 클릭될 때마다 지불하는 비용. 키워드 경쟁도와 광고 품질에 따라 달라져요.",
+     example:"CPC 500원, 클릭 100회 → 광고비 50,000원"},
+    {abbr:"CPM", kr:"1,000회 노출당 비용", full:"Cost per Mille",
+     desc:"클릭 여부와 상관없이 1,000회 노출될 때마다 과금. 브랜드 인지도를 높일 때 주로 사용해요.",
+     example:"CPM 8,000원 → 노출 100,000회 시 광고비 약 800,000원"},
+    {abbr:"CPA", kr:"행위당 비용", full:"Cost per Action",
+     desc:"회원가입, 구매, 다운로드 등 특정 행동이 발생할 때마다 과금. 성과형 광고에서 주로 써요.",
+     example:"CPA 15,000원, DB 10건 → 광고비 150,000원"},
+    {abbr:"CPR", kr:"결과당 비용", full:"Cost per Result",
+     desc:"메타 광고에서 설정한 최적화 목표(랜딩페이지뷰, 구매 등) 1건당 비용. 광고 리포트에서 가장 자주 보는 지표예요."},
+    {abbr:"CPL", kr:"리드당 비용", full:"Cost per Lead",
+     desc:"회원가입, 문의 등 리드(잠재고객 DB) 1건을 획득하는 데 든 비용."},
+  ],
+  glossaryPerf: [
+    {abbr:"ROAS", kr:"광고 수익률", full:"Return on Ad Spend",
+     desc:"광고비 대비 발생한 매출의 비율. 500%라면 광고비의 5배 매출을 냈다는 뜻이에요.",
+     example:"광고비 100만원 → 매출 500만원 = ROAS 500%"},
+    {abbr:"CTR", kr:"클릭률", full:"Click Through Rate",
+     desc:"노출 대비 클릭이 발생한 비율. 소재가 얼마나 시선을 끄는지 보여줘요.",
+     example:"노출 10,000회 중 클릭 700회 → CTR 7%"},
+    {abbr:"CVR", kr:"전환율", full:"Conversion Rate",
+     desc:"클릭(또는 방문) 대비 실제 전환(구매, 가입 등)이 일어난 비율.",
+     example:"클릭 100회 중 구매 5건 → CVR 5%"},
+    {abbr:"DB", kr:"잠재고객 데이터", full:"Database (Lead)",
+     desc:"회원가입, 상담신청 등으로 확보한 잠재고객 정보. LOVLOV에서는 주로 자사몰 회원가입을 의미해요."},
+    {abbr:"AOV", kr:"평균 주문 금액", full:"Average Order Value",
+     desc:"주문 1건당 평균 결제 금액. 매출을 주문 수로 나눠 계산해요."},
+  ],
+  glossaryReach: [
+    {abbr:"노출수", kr:"Impressions", full:"",
+     desc:"광고가 화면에 표시된 총 횟수. 같은 사람에게 여러 번 노출돼도 모두 합산돼요."},
+    {abbr:"도달", kr:"Reach", full:"",
+     desc:"광고를 본 순 인원 수. 한 사람이 광고를 5번 봐도 도달은 1명으로 집계돼요."},
+    {abbr:"빈도", kr:"Frequency", full:"",
+     desc:"도달한 사람 1명이 평균적으로 광고를 본 횟수. 노출수 ÷ 도달로 계산해요. 너무 높으면 피로도가 쌓여요.",
+     example:"노출 30,000 ÷ 도달 10,000 = 빈도 3"},
+    {abbr:"랜딩페이지뷰", kr:"LPV", full:"Landing Page View",
+     desc:"광고 클릭 후 실제로 랜딩페이지가 로딩까지 완료된 방문 수. 클릭수보다 항상 같거나 적어요."},
+  ],
+  glossaryEtc: [
+    {abbr:"소재", kr:"Creative", full:"",
+     desc:"광고에 사용되는 이미지, 영상, 카피 등 콘텐츠 전체를 가리키는 말."},
+    {abbr:"캠페인 / 광고세트 / 광고", kr:"Campaign / Ad set / Ad", full:"",
+     desc:"메타 광고의 3단계 구조. 캠페인(목표) → 광고세트(예산·타겟) → 광고(실제 소재) 순으로 하위 개념이에요."},
+    {abbr:"CBO", kr:"캠페인 예산 최적화", full:"Campaign Budget Optimization",
+     desc:"광고세트 여러 개의 예산을 캠페인 단위로 묶어 메타 AI가 자동 배분하는 방식."},
+    {abbr:"타겟팅", kr:"Targeting", full:"",
+     desc:"광고를 보여줄 대상을 나이, 성별, 지역, 관심사 등으로 설정하는 것."},
+    {abbr:"픽셀", kr:"Pixel", full:"",
+     desc:"자사몰에 설치해 방문자 행동(구매, 회원가입 등)을 추적하는 코드. 전환 데이터 수집의 기반이 돼요."},
+  ]
+};
+
+for(const [gridId, terms] of Object.entries(glossary)){
+  const grid = document.getElementById(gridId);
+  terms.forEach(t=>{
+    const div = document.createElement('div');
+    div.className = 'term-card';
+    div.dataset.search = (t.abbr+' '+t.kr+' '+t.full+' '+t.desc).toLowerCase();
+    div.innerHTML = `
+      <div class="term-head">
+        <span class="term-abbr">${t.abbr}</span>
+        <span class="term-kr">${t.kr}${t.full ? ' · '+t.full : ''}</span>
+      </div>
+      <div class="term-desc">${t.desc}</div>
+      ${t.example ? `<div class="term-example"><b>예시</b> ${t.example}</div>` : ''}
+    `;
+    grid.appendChild(div);
   });
+}
+
+document.getElementById('glossarySearch').addEventListener('input', (e)=>{
+  const q = e.target.value.toLowerCase().trim();
+  document.querySelectorAll('.term-card').forEach(card=>{
+    card.classList.toggle('hidden', q && !card.dataset.search.includes(q));
+  });
+  document.querySelectorAll('.glossary-group').forEach(group=>{
+    const visible = group.querySelectorAll('.term-card:not(.hidden)').length;
+    group.style.display = visible === 0 ? 'none' : '';
+  });
+});
+
+document.getElementById('genTime').textContent = '페이지 생성: ' + new Date().toLocaleString('ko-KR');
 </script>
 </body>
 </html>
